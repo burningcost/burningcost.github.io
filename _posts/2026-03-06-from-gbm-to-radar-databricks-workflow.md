@@ -326,25 +326,28 @@ Radar (Willis Towers Watson) expects a factor table as `FactorName`, `Level`, `R
 **Versioning.** Every export should carry `model_version`, `export_date`, and `job_run_id`. Write to both a versioned DBFS path and a Delta table in Unity Catalog. The requirement is simple: given a Radar factor table that was live on a given date, you must be able to identify the model run that produced it, the training data it used, and the CV results that justified its deployment.
 
 ```python
-import pandas as pd
+import datetime
 
-# Build the export as a pandas DataFrame for Spark compatibility
+# rating_table is a Polars DataFrame from shap-relativities
 radar_export = (
-    rating_table[["feature", "level", "relativity"]]
-    .rename(columns={"feature": "FactorName", "level": "Level", "relativity": "Relativity"})
-    .assign(
-        ModelVersion=model_version,
-        ExportDate=pd.Timestamp.today().strftime("%Y-%m-%d"),
-        JobRunId=dbutils.notebook.entry_point.getDbutils().notebook().getContext().currentRunId().get(),
-    )
+    rating_table
+    .select(["feature", "level", "relativity"])
+    .rename({"feature": "FactorName", "level": "Level", "relativity": "Relativity"})
+    .with_columns([
+        pl.lit(model_version).alias("ModelVersion"),
+        pl.lit(datetime.date.today().isoformat()).alias("ExportDate"),
+        pl.lit(
+            dbutils.notebook.entry_point.getDbutils().notebook().getContext().currentRunId().get()
+        ).alias("JobRunId"),
+    ])
 )
 
 # Write to versioned DBFS path
 export_path = f"/dbfs/pricing/radar_exports/{model_version}/rating_relativities_radar.csv"
-radar_export.to_csv(export_path, index=False)
+radar_export.write_csv(export_path)
 
-# Write to Unity Catalog for audit trail
-spark.createDataFrame(radar_export).write.format("delta").mode("append").saveAsTable(
+# Write to Unity Catalog for audit trail - convert to pandas at the Spark boundary
+spark.createDataFrame(radar_export.to_pandas()).write.format("delta").mode("append").saveAsTable(
     "pricing.motor.radar_exports"
 )
 ```

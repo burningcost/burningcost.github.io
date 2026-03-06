@@ -107,7 +107,7 @@ X_pd = df.select(features).to_pandas()
 y = df["claim_count"].to_numpy()
 exposure = df["exposure_years"].to_numpy()
 
-# Exposure as weight — correct practice given CatBoost's API constraints
+# Exposure as weight - correct practice given CatBoost's API constraints
 train_pool = Pool(
     data=X_pd,
     label=y,
@@ -173,7 +173,7 @@ Use `depth=6` and `rsm=0.8` (random subspace method) as starting points. An unco
 ```python
 from catboost import CatBoostRegressor, Pool
 
-# Frequency model — final training run after CV
+# Frequency model - final training run after CV
 freq_pool = Pool(
     data=X_train_all_pd,
     label=y_freq,
@@ -195,7 +195,7 @@ freq_model = CatBoostRegressor(
 )
 freq_model.fit(freq_pool)
 
-# Severity model — claims only
+# Severity model - claims only
 claims_mask = df_train_all["claim_count"].to_numpy() > 0
 sev_pool = Pool(
     data=X_train_all_pd[claims_mask],
@@ -237,7 +237,7 @@ We run `SHAPRelativities` on both models separately, applied to the full trainin
 ```python
 from shap_relativities import SHAPRelativities
 
-# Frequency SHAP — pass pandas DataFrame at the CatBoost boundary
+# Frequency SHAP - pass pandas DataFrame at the CatBoost boundary
 sr_freq = SHAPRelativities(
     model=freq_model,
     X=X_train_all_pd,
@@ -248,7 +248,7 @@ sr_freq = SHAPRelativities(
 sr_freq.fit()
 rels_freq = sr_freq.extract_relativities(base_levels=BASE_LEVELS)
 
-# Severity SHAP — claims-only population, weighted by claim count
+# Severity SHAP - claims-only population, weighted by claim count
 sr_sev = SHAPRelativities(
     model=sev_model,
     X=X_train_all_pd[claims_mask],
@@ -411,10 +411,10 @@ Now the honest caveats, because they matter and they do not disappear by running
 
 | Library | Purpose | Install |
 |---------|---------|---------|
-| [`shap-relativities`](https://github.com/burningcost/shap-relativities) | SHAP extraction from CatBoost | `uv pip install git+https://github.com/burningcost/shap-relativities` |
-| [`insurance-cv`](https://github.com/burningcost/insurance-cv) | Temporal cross-validation splits | `uv pip install git+https://github.com/burningcost/insurance-cv` |
-| `catboost` | Model training | `uv pip install catboost` |
-| `statsmodels` | GLM benchmark | `uv pip install statsmodels` |
+| [`shap-relativities`](https://github.com/burningcost/shap-relativities) | SHAP extraction from CatBoost | `uv uv pip install git+https://github.com/burningcost/shap-relativities` |
+| [`insurance-cv`](https://github.com/burningcost/insurance-cv) | Temporal cross-validation splits | `uv uv pip install git+https://github.com/burningcost/insurance-cv` |
+| `catboost` | Model training | `uv uv pip install catboost` |
+| `statsmodels` | GLM benchmark | `uv uv pip install statsmodels` |
 | `mlflow` | Experiment tracking | Pre-installed on Databricks Runtime 14+ |
 
 The full notebook set - `01_data_prep`, `02_train_extract`, `03_export` - and the Job JSON definition are available as a downloadable archive. The notebooks map 1:1 to the sections above and can be imported directly into a Databricks workspace.

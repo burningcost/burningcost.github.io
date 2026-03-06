@@ -10,9 +10,9 @@ The name comes from a basic actuarial concept: burning cost is claims incurred d
 
 **What we are working on:**
 
-- `shap-relativities` — extract rating factor tables from gradient boosting models
+- `shap-relativities` - extract rating factor tables from gradient boosting models
 - mSHAP support for two-part frequency/severity models (in development)
-- Burning Cost CLI — orchestration for pricing model pipelines
+- Burning Cost CLI - orchestration for pricing model pipelines
 
 **The problem we are solving:**
 

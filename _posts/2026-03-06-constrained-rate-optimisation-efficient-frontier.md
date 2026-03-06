@@ -10,7 +10,7 @@ Every UK personal lines pricing team we have spoken to runs their rate change pr
 
 It works. The problems are structural.
 
-The Excel scenario is a single point. The team has picked one combination of factor adjustments and checked whether it satisfies the constraints. They have no idea whether a different combination of adjustments could have hit the same LR with less volume loss, or the same volume with a lower LR. The efficient frontier — the full set of achievable (LR, volume) outcomes — is never computed.
+The Excel scenario is a single point. The team has picked one combination of factor adjustments and checked whether it satisfies the constraints. They have no idea whether a different combination of adjustments could have hit the same LR with less volume loss, or the same volume with a lower LR. The efficient frontier - the full set of achievable (LR, volume) outcomes - is never computed.
 
 The shadow prices on constraints are never known either. How much volume would you lose if you tightened the LR target by one percentage point? Which constraint is actually binding? What is the regulatory cost of FCA PS21/5 ENBP compliance, in dislocation terms? These are answerable questions. Nobody is answering them.
 
@@ -22,9 +22,9 @@ We built [`rate-optimiser`](https://github.com/burningcost/rate-optimiser) to an
 
 The setup is directly analogous to Markowitz portfolio optimisation.
 
-In portfolio construction, you have a universe of assets. Each has an expected return and a variance. You want to find the portfolio weights — how much to allocate to each asset — that minimise variance for a given expected return target. Solving for many return targets traces the efficient frontier: the Pareto-optimal set of (return, risk) portfolios. The frontier tells you, quantitatively, what trade-off you are making at every point.
+In portfolio construction, you have a universe of assets. Each has an expected return and a variance. You want to find the portfolio weights - how much to allocate to each asset - that minimise variance for a given expected return target. Solving for many return targets traces the efficient frontier: the Pareto-optimal set of (return, risk) portfolios. The frontier tells you, quantitatively, what trade-off you are making at every point.
 
-In rate optimisation, you have a portfolio of policies. Each has a technical premium, a current premium, and a renewal probability that responds to price changes. The decision variables are multiplicative adjustments to rating factor relativities: you are deciding how much to shift each factor. The objective is minimum dislocation — keep the factor adjustments as close to 1.0 as possible, while meeting the LR and volume constraints.
+In rate optimisation, you have a portfolio of policies. Each has a technical premium, a current premium, and a renewal probability that responds to price changes. The decision variables are multiplicative adjustments to rating factor relativities: you are deciding how much to shift each factor. The objective is minimum dislocation - keep the factor adjustments as close to 1.0 as possible, while meeting the LR and volume constraints.
 
 Solving for many LR targets traces the efficient frontier of achievable (LR, volume) pairs. At each point on the frontier, you get shadow prices: the Lagrange multipliers that tell you the marginal cost of tightening each constraint.
 
@@ -38,14 +38,14 @@ subject to E[LR(m)] ≤ LR_target
            π_i^renewal ≤ π_i^NB_equiv  (ENBP, per channel)
 ```
 
-The decision variables `m_k` are multiplicative adjustments to each rating factor. A value of 1.05 means factor k's relativities are uniformly scaled up by 5% across all levels — a parallel shift on the log scale. The demand model enters through the volume and LR constraints: `p_i(π_i / π_market_i)` is the renewal probability at the adjusted premium. This makes both constraints nonlinear in `m`, which is why the problem requires SLSQP rather than a linear solver.
+The decision variables `m_k` are multiplicative adjustments to each rating factor. A value of 1.05 means factor k's relativities are uniformly scaled up by 5% across all levels - a parallel shift on the log scale. The demand model enters through the volume and LR constraints: `p_i(π_i / π_market_i)` is the renewal probability at the adjusted premium. This makes both constraints nonlinear in `m`, which is why the problem requires SLSQP rather than a linear solver.
 
 ---
 
 ## A worked example
 
 ```python
-import pandas as pd
+import polars as pl
 from rate_optimiser import (
     PolicyData, FactorStructure, DemandModel,
     RateChangeOptimiser, EfficientFrontier,
@@ -56,14 +56,16 @@ from rate_optimiser.demand import make_logistic_demand, LogisticDemandParams
 
 # Load GLM outputs: policy_id, channel, renewal_flag,
 # technical_premium, current_premium
-df = pd.read_parquet("policies.parquet")
-data = PolicyData(df)
+df = pl.read_parquet("policies.parquet")
+
+# rate_optimiser works with pandas at its boundary
+data = PolicyData(df.to_pandas())
 
 # Describe the multiplicative tariff structure
 factor_names = ["f_age_band", "f_ncb", "f_vehicle_group", "f_region", "f_tenure_discount"]
 fs = FactorStructure(
     factor_names=factor_names,
-    factor_values=df[factor_names],
+    factor_values=df.select(factor_names).to_pandas(),
     renewal_factor_names=["f_tenure_discount"],  # renewal-only; excluded from NB equivalent
 )
 
@@ -86,13 +88,13 @@ result = opt.solve()
 print(result.summary())
 ```
 
-`result.factor_adjustments` gives you the optimal multiplier for each factor — `{"f_age_band": 1.04, "f_ncb": 1.02, ...}`. `result.shadow_prices` is the number worth reading first.
+`result.factor_adjustments` gives you the optimal multiplier for each factor - `{"f_age_band": 1.04, "f_ncb": 1.02, ...}`. `result.shadow_prices` is the number worth reading first.
 
 ---
 
 ## Shadow prices: the number to put in front of the commercial director
 
-The shadow price on the LR constraint is the Lagrange multiplier: the marginal dislocation cost of tightening the LR target by one unit. When the LR constraint is slack, the shadow price is zero — you are not at the frontier, and tightening the target costs nothing yet. As you approach the knee of the frontier, the shadow price rises steeply.
+The shadow price on the LR constraint is the Lagrange multiplier: the marginal dislocation cost of tightening the LR target by one unit. When the LR constraint is slack, the shadow price is zero - you are not at the frontier, and tightening the target costs nothing yet. As you approach the knee of the frontier, the shadow price rises steeply.
 
 Tracing the frontier makes this concrete:
 
@@ -112,9 +114,9 @@ print(frontier.shadow_price_summary())
       0.68        0.680            0.937       0.72           0.08
 ```
 
-At a 72% LR target, the shadow price is 0.15 — modest. At 70%, it has doubled to 0.31. At 68%, it has jumped to 0.72. The knee is between 70% and 68%. The pricing team can show this table to a commercial director and say: "We can push to 70%, but below that the volume cost per LR point gained accelerates sharply." That is a quantified, defensible position. It is not available from a scenario in Excel.
+At a 72% LR target, the shadow price is 0.15 - modest. At 70%, it has doubled to 0.31. At 68%, it has jumped to 0.72. The knee is between 70% and 68%. The pricing team can show this table to a commercial director and say: "We can push to 70%, but below that the volume cost per LR point gained accelerates sharply." That is a quantified, defensible position. It is not available from a scenario in Excel.
 
-The volume shadow price tells a similar story. At a 97% volume retention bound it is zero throughout the upper LR range — the volume constraint is not binding. It only starts binding below 70% LR, where the required rate increases are large enough to trigger meaningful lapse.
+The volume shadow price tells a similar story. At a 97% volume retention bound it is zero throughout the upper LR range - the volume constraint is not binding. It only starts binding below 70% LR, where the required rate increases are large enough to trigger meaningful lapse.
 
 ---
 
@@ -138,7 +140,7 @@ No other open-source tool we are aware of implements this constraint at all. Com
 
 The deterministic problem uses E[LR] ≤ target. The stochastic formulation, following Branda (2013), is stricter: P(LR ≤ target) ≥ α. The LR must stay below the target with confidence level α, not just in expectation.
 
-Under a normal approximation — appropriate for large books where the CLT applies — this reformulates to:
+Under a normal approximation - appropriate for large books where the CLT applies - this reformulates to:
 
 ```
 E[LR] + z_α × σ[LR] ≤ target
@@ -164,25 +166,25 @@ opt = StochasticRateOptimiser(
 result = opt.solve()
 ```
 
-The stochastic solver will always recommend higher rate than the deterministic one. The difference is the "uncertainty premium" — the additional rate required to maintain the LR target with 95% confidence rather than just in expectation. If your book has high variance (large Tweedie dispersion, concentrated exposure), this can be substantial. If you have a large, diversified portfolio, it will be small. That is not a surprise result, but it is a result the solver quantifies rather than leaves to intuition.
+The stochastic solver will always recommend higher rate than the deterministic one. The difference is the "uncertainty premium" - the additional rate required to maintain the LR target with 95% confidence rather than just in expectation. If your book has high variance (large Tweedie dispersion, concentrated exposure), this can be substantial. If you have a large, diversified portfolio, it will be small. That is not a surprise result, but it is a result the solver quantifies rather than leaves to intuition.
 
 ---
 
 ## What this is not
 
-The library consumes GLM outputs; it does not fit them. Use statsmodels, LightGBM, or Emblem for the models, then feed the technical premiums and factor values here. It is also an offline rate strategy tool, not a real-time quote engine — Radar Live and Earnix handle individual-level pricing at point of quote.
+The library consumes GLM outputs; it does not fit them. Use statsmodels, CatBoost, or Emblem for the models, then feed the technical premiums and factor values here. It is also an offline rate strategy tool, not a real-time quote engine - Radar Live and Earnix handle individual-level pricing at point of quote.
 
 ---
 
 ## Getting started
 
 ```bash
-pip install rate-optimiser
+uv add rate-optimiser
 
 # With stochastic module (requires cvxpy):
-pip install "rate-optimiser[stochastic]"
+uv add "rate-optimiser[stochastic]"
 ```
 
 Source and issue tracker on [GitHub](https://github.com/burningcost/rate-optimiser). The priority backlog includes a competitive equilibrium module (Lerner index pricing as baseline), Bayesian demand model integration to propagate posterior uncertainty over price elasticity through the optimiser, and a Consumer Duty fair value checker.
 
-The `feasibility_report()` method is the first thing to run before any solve. If your constraints are infeasible at current rates, the solver will tell you — and that is itself useful information about the portfolio.
+The `feasibility_report()` method is the first thing to run before any solve. If your constraints are infeasible at current rates, the solver will tell you - and that is itself useful information about the portfolio.

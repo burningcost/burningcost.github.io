@@ -8,7 +8,7 @@ tags: [bayesian, hierarchical-models, pymc, credibility, partial-pooling, pricin
 
 Every UK motor pricing model has the same problem, buried in the same place: the cells that matter most are the ones with the least data.
 
-Age 17–21. ABI vehicle group 40+. London postcode. Three claims in three years. What's the true expected frequency for that intersection? Your GBM either refused to split on it — pooling it with the trunk — or it split on it and fitted the noise. Your GLM assumes the effect is exactly the product of the young-driver relativity and the sports-car relativity, which is demonstrably wrong. And neither approach tells you how confident to be in the answer.
+Age 17-21. ABI vehicle group 40+. London postcode. Three claims in three years. What's the true expected frequency for that intersection? Your GBM either refused to split on it - pooling it with the trunk - or it split on it and fitted the noise. Your GLM assumes the effect is exactly the product of the young-driver relativity and the sports-car relativity, which is demonstrably wrong. And neither approach tells you how confident to be in the answer.
 
 We built `bayesian-pricing` to solve this properly. The mechanism is partial pooling: thin segments automatically borrow strength from related segments, with the degree of borrowing determined by the data, not by a hyperparameter you tune with cross-validation.
 
@@ -18,7 +18,7 @@ We built `bayesian-pricing` to solve this properly. The mechanism is partial poo
 
 A representative UK motor rating model has roughly: 10 driver age bands × 6 NCD levels × 30 vehicle groups × 124 postcode areas × 20 occupation groups. That is 4.5 million theoretical cells. A mid-sized insurer with 1 million policies covers perhaps 3% of them with more than 30 observations. Everything else is thin.
 
-The thin-data problem is worse at interaction level. A cell like "age 17–21 × sports car × London" may have 8 claims in your book, accumulated over 5 years. That's enough to know the cell is high-risk. It is not enough to estimate its frequency to within 30%.
+The thin-data problem is worse at interaction level. A cell like "age 17-21 × sports car × London" may have 8 claims in your book, accumulated over 5 years. That's enough to know the cell is high-risk. It is not enough to estimate its frequency to within 30%.
 
 The question is not whether to regularise. You have to regularise. The question is whether the regularisation is calibrated to the data or set by hand.
 
@@ -26,13 +26,13 @@ The question is not whether to regularise. You have to regularise. The question 
 
 ## Why the standard tools get this wrong
 
-**A saturated GLM** — one coefficient per cell — gives you the raw observed rate. For 8 claims on 60 policy-years that's 13.3%. The standard error is ±4.7 percentage points at 95%. You cannot put that in a rate table.
+**A saturated GLM** - one coefficient per cell - gives you the raw observed rate. For 8 claims on 60 policy-years that's 13.3%. The standard error is ±4.7 percentage points at 95%. You cannot put that in a rate table.
 
 **A main-effects GLM** avoids this by forcing multiplicativity: young-driver relativity × sports-car relativity × London relativity. This works when the interaction really is multiplicative. In practice, for the high-risk intersections that dominate adverse selection, it isn't. A young driver in a sports car in London is not merely the product of three independent effects. The interaction is super-multiplicative, and a main-effects model will systematically underprice it.
 
-**Ridge regularisation** on a GLM does shrinkage, but it applies uniform shrinkage regardless of exposure. A cell with 5,000 policy-years gets the same penalty coefficient as one with 20. That's wrong. The penalty should scale with how noisy the estimate is — which means it should scale with exposure.
+**Ridge regularisation** on a GLM does shrinkage, but it applies uniform shrinkage regardless of exposure. A cell with 5,000 policy-years gets the same penalty coefficient as one with 20. That's wrong. The penalty should scale with how noisy the estimate is - which means it should scale with exposure.
 
-**GBMs with `min_data_in_leaf`** avoid splitting on thin cells, which prevents the most egregious overfitting. But they cannot borrow strength across related cells. The "age 17–21, sports car, outside London" leaf with 200 observations knows nothing about the "age 17–21, sports car, London" leaf with 10. And GBMs produce point predictions — there is no calibrated uncertainty interval over the expected loss rate.
+**GBMs with `min_data_in_leaf`** avoid splitting on thin cells, which prevents the most egregious overfitting. But they cannot borrow strength across related cells. The "age 17-21, sports car, outside London" leaf with 200 observations knows nothing about the "age 17-21, sports car, London" leaf with 10. And GBMs produce point predictions - there is no calibrated uncertainty interval over the expected loss rate.
 
 ---
 
@@ -40,7 +40,7 @@ The question is not whether to regularise. You have to regularise. The question 
 
 The fundamental insight is that neither extreme is right. Treating each cell independently (no pooling) fits noise for thin cells. Treating all cells identically (complete pooling to the portfolio mean) ignores genuine between-segment heterogeneity.
 
-Partial pooling is the middle ground. Each segment's expected loss rate is drawn from a shared population distribution. The population distribution is estimated from all the segments simultaneously. Thin segments, whose own data is noisy, get pulled toward the population mean. Dense segments, whose data is reliable, trust their own experience. The degree of pulling — the credibility factor — is not hand-set. It is the Bayesian posterior: the optimal blend given the ratio of within-segment sampling noise to between-segment signal variance.
+Partial pooling is the middle ground. Each segment's expected loss rate is drawn from a shared population distribution. The population distribution is estimated from all the segments simultaneously. Thin segments, whose own data is noisy, get pulled toward the population mean. Dense segments, whose data is reliable, trust their own experience. The degree of pulling - the credibility factor - is not hand-set. It is the Bayesian posterior: the optimal blend given the ratio of within-segment sampling noise to between-segment signal variance.
 
 Actuaries have been doing a one-dimensional version of this for decades. The Bühlmann-Straub credibility premium is:
 
@@ -73,28 +73,29 @@ z_age_k    ~  Normal(0, 1)                  [one per age band]
 u_age_k    =  z_age_k × σ_age
 ```
 
-The `σ` parameters are the variance components — they control how much each rating factor is allowed to vary across the book. If `σ_veh` turns out to be 0.1, vehicle group explains little frequency variation and all vehicle segments get pulled strongly toward the portfolio mean. If `σ_veh` is 0.4, vehicle group is a meaningful driver and dense cells get relativities well away from 1.0.
+The `σ` parameters are the variance components - they control how much each rating factor is allowed to vary across the book. If `σ_veh` turns out to be 0.1, vehicle group explains little frequency variation and all vehicle segments get pulled strongly toward the portfolio mean. If `σ_veh` is 0.4, vehicle group is a meaningful driver and dense cells get relativities well away from 1.0.
 
-The non-centered parameterisation — expressing group effects as `z × σ` rather than directly as `u ~ Normal(0, σ)` — is mandatory for hierarchical models. The centered version creates a funnel geometry in the posterior when `σ` is small: HMC's step size cannot simultaneously work in the wide mouth and the narrow neck. The non-centered version eliminates this. Every practitioner who has had NUTS produce thousands of divergent transitions in a hierarchical model and didn't know why should read Twiecki's 2017 blog post on this.
+The non-centered parameterisation - expressing group effects as `z × σ` rather than directly as `u ~ Normal(0, σ)` - is mandatory for hierarchical models. The centered version creates a funnel geometry in the posterior when `σ` is small: HMC's step size cannot simultaneously work in the wide mouth and the narrow neck. The non-centered version eliminates this. Every practitioner who has had NUTS produce thousands of divergent transitions in a hierarchical model and didn't know why should read Twiecki's 2017 blog post on this.
 
 ---
 
 ## Putting it into practice
 
-The library accepts segment-level sufficient statistics — one row per rating cell, with claim count and earned exposure. This is the correct production design: aggregate your book to rating cells before fitting. A book with 500,000 policies and 8,000 non-empty rating cells runs the model on 8,000 rows, making NUTS feasible in 20–40 minutes on a standard machine.
+The library accepts segment-level sufficient statistics - one row per rating cell, with claim count and earned exposure. This is the correct production design: aggregate your book to rating cells before fitting. A book with 500,000 policies and 8,000 non-empty rating cells runs the model on 8,000 rows, making NUTS feasible in 20-40 minutes on a standard machine.
 
 ```python
-import pandas as pd
+import polars as pl
 from bayesian_pricing import HierarchicalFrequency, BayesianRelativities
 from bayesian_pricing.frequency import SamplerConfig
 
 # One row per rating cell — aggregate your policy data first
-df = pd.DataFrame({
+# bayesian_pricing expects pandas at the model boundary; convert from Polars
+df = pl.DataFrame({
     "veh_group": ["Supermini", "Supermini", "Sports", "Sports", "Saloon"],
     "age_band":  ["17-21", "31-40", "17-21", "31-40", "31-40"],
     "claims":    [8, 120, 3, 45, 200],
     "exposure":  [60.0, 900.0, 25.0, 350.0, 2000.0],
-})
+}).to_pandas()
 
 model = HierarchicalFrequency(
     group_cols=["veh_group", "age_band"],
@@ -113,7 +114,7 @@ config = SamplerConfig(
 model.fit(df, claim_count_col="claims", exposure_col="exposure", sampler_config=config)
 ```
 
-During model development, use `method="pathfinder"` instead of NUTS. Pathfinder is a variational approximation that runs in seconds rather than minutes. It cannot give you R-hat convergence diagnostics — you cannot use it for final production estimates — but for iterating on priors and model structure it is two orders of magnitude faster.
+During model development, use `method="pathfinder"` instead of NUTS. Pathfinder is a variational approximation that runs in seconds rather than minutes. It cannot give you R-hat convergence diagnostics - you cannot use it for final production estimates - but for iterating on priors and model structure it is two orders of magnitude faster.
 
 ---
 
@@ -131,7 +132,7 @@ preds = model.predict()
 #   Saloon     31-40      0.0978   0.0912  0.0976  0.1045          0.97
 ```
 
-The credibility factor is the Bayesian equivalent of `Z_i` in Bühlmann-Straub. A value of 0.21 for Sports/17-21 means that cell has only 25 policy-years of experience — the posterior is 79% portfolio mean, 21% own data. The wide credible interval (0.11 to 0.29) reflects exactly how uncertain we are.
+The credibility factor is the Bayesian equivalent of `Z_i` in Bühlmann-Straub. A value of 0.21 for Sports/17-21 means that cell has only 25 policy-years of experience - the posterior is 79% portfolio mean, 21% own data. The wide credible interval (0.11 to 0.29) reflects exactly how uncertain we are.
 
 Compare Supermini/31-40 with 900 policy-years: credibility factor 0.94. The posterior is almost entirely data-driven. The credible interval (0.120 to 0.149) is tight.
 
@@ -141,7 +142,7 @@ This is partial pooling doing its job. The thin cell is not overfitting to 3 cla
 
 ## Relativities for the rate table
 
-The `BayesianRelativities` class extracts multiplicative relativities in the format actuaries use — the same format as `exp(β)` from a GLM:
+The `BayesianRelativities` class extracts multiplicative relativities in the format actuaries use - the same format as `exp(β)` from a GLM:
 
 ```python
 rel = BayesianRelativities(model, hdi_prob=0.9)
@@ -154,7 +155,7 @@ print(veh_table.table)
 #   Supermini       0.819        0.764        0.881           0.89               0.117
 ```
 
-The 90% credible interval for Sports — 1.23 to 1.89 — is wide because vehicle group alone is not the whole story. The interaction with driver age band matters. `bayesian-pricing` can model this explicitly:
+The 90% credible interval for Sports - 1.23 to 1.89 - is wide because vehicle group alone is not the whole story. The interaction with driver age band matters. `bayesian-pricing` can model this explicitly:
 
 ```python
 model_with_interaction = HierarchicalFrequency(
@@ -164,7 +165,7 @@ model_with_interaction = HierarchicalFrequency(
 )
 ```
 
-The interaction random effects are a 30 × 10 matrix of offsets (vehicle groups × age bands), each partially pooled toward zero via a shared variance hyperprior. When data are sparse — which they are for most off-diagonal cells — the interaction shrinks to zero, and the model falls back to additive main effects. When data are dense, genuine interactions can be identified.
+The interaction random effects are a 30 × 10 matrix of offsets (vehicle groups × age bands), each partially pooled toward zero via a shared variance hyperprior. When data are sparse - which they are for most off-diagonal cells - the interaction shrinks to zero, and the model falls back to additive main effects. When data are dense, genuine interactions can be identified.
 
 This is fundamentally different from a GBM split. The GBM either makes the split or does not. The Bayesian model always includes the interaction term but sets its magnitude via the posterior. Thin cells get small interactions; data-rich cells can have large ones.
 
@@ -179,7 +180,7 @@ thin = rel.thin_segments(credibility_threshold=0.3)
 #   age_band     17-21                       0.21        1.84
 ```
 
-A credibility factor below 0.3 means less than 30% of the estimate comes from the segment's own experience. These segments should not drive large rate changes without actuarial sign-off. The wide credible interval is the quantitative evidence for that caution: the 17–21 age band might really be 1.84× the base, or it might be 1.10×, or 2.60×. The data do not yet tell us which.
+A credibility factor below 0.3 means less than 30% of the estimate comes from the segment's own experience. These segments should not drive large rate changes without actuarial sign-off. The wide credible interval is the quantitative evidence for that caution: the 17-21 age band might really be 1.84× the base, or it might be 1.10×, or 2.60×. The data do not yet tell us which.
 
 This output is the regulatory case for the approach under FCA Consumer Duty. If a pricing model is making significant rate changes to thin segments based on noisy data, that is a fair value risk. The credibility factor flags exactly where that risk sits.
 
@@ -202,19 +203,19 @@ ppc = posterior_predictive_check(model, claim_count_col="claims")
 # posterior_predictive_p should be between 0.05 and 0.95 for each
 ```
 
-R-hat above 1.01 on any parameter means the chains did not mix — the results cannot be used. This almost always means the model is poorly specified or the non-centered parameterisation is not being applied. In `bayesian-pricing` the non-centered parameterisation is the default; if you are extending the model manually in PyMC, make sure to apply it.
+R-hat above 1.01 on any parameter means the chains did not mix - the results cannot be used. This almost always means the model is poorly specified or the non-centered parameterisation is not being applied. In `bayesian-pricing` the non-centered parameterisation is the default; if you are extending the model manually in PyMC, make sure to apply it.
 
-If divergences appear after non-centering, increase `target_accept` from 0.8 to 0.95 in `SamplerConfig`. For persistent divergences, check your variance hyperpriors — a `HalfCauchy` hyperprior can allow unrealistically large random effects for thin cells, which paradoxically creates fitting problems.
+If divergences appear after non-centering, increase `target_accept` from 0.8 to 0.95 in `SamplerConfig`. For persistent divergences, check your variance hyperpriors - a `HalfCauchy` hyperprior can allow unrealistically large random effects for thin cells, which paradoxically creates fitting problems.
 
 ---
 
 ## Where this sits relative to GBMs
 
-We are not suggesting you replace your GBM with this library. For the bulk of your rating factors — vehicle age, driver age as a continuous feature, NCD as a quasi-continuous variable — a GBM on dense cells is the right tool.
+We are not suggesting you replace your GBM with this library. For the bulk of your rating factors - vehicle age, driver age as a continuous feature, NCD as a quasi-continuous variable - a GBM on dense cells is the right tool.
 
 The practical architecture for a production book looks like this:
 
-1. LightGBM on the full portfolio for main-effects signal where data are dense
+1. CatBoost on the full portfolio for main-effects signal where data are dense
 2. Extract segment-level residuals from the GBM
 3. `bayesian-pricing` on those residuals to pool the thin-cell adjustments
 4. Combine the GBM base prediction with the Bayesian residual adjustment
@@ -227,9 +228,9 @@ For teams that want the full Bayesian approach without a GBM stage, the library 
 
 ## Relationship to the actuarial literature
 
-The connection between hierarchical Bayesian models and credibility theory is older than most pricing actuaries realise. Bühlmann (1967) showed that the credibility premium is the BLUP — best linear unbiased predictor — under the assumed model. What the actuarial community called "credibility" and what statisticians called "empirical Bayes" or "shrinkage estimation" are the same thing in the one-dimensional Normal case.
+The connection between hierarchical Bayesian models and credibility theory is older than most pricing actuaries realise. Bühlmann (1967) showed that the credibility premium is the BLUP - best linear unbiased predictor - under the assumed model. What the actuarial community called "credibility" and what statisticians called "empirical Bayes" or "shrinkage estimation" are the same thing in the one-dimensional Normal case.
 
-Ohlsson (2008, *Scandinavian Actuarial Journal*) proved that ridge regression on GLM dummy variables is equivalent to Bühlmann-Straub with `K = λ/v` where `λ` is the ridge penalty. This means that every time you have regularised a GLM, you have been doing implicit credibility. The difference is that in a regularised GLM, `λ` is set by cross-validation — a noisy procedure when cells are thin. In the Bayesian model, the equivalent of `λ` is estimated from the posterior, which propagates its uncertainty correctly.
+Ohlsson (2008, *Scandinavian Actuarial Journal*) proved that ridge regression on GLM dummy variables is equivalent to Bühlmann-Straub with `K = λ/v` where `λ` is the ridge penalty. This means that every time you have regularised a GLM, you have been doing implicit credibility. The difference is that in a regularised GLM, `λ` is set by cross-validation - a noisy procedure when cells are thin. In the Bayesian model, the equivalent of `λ` is estimated from the posterior, which propagates its uncertainty correctly.
 
 Krapu et al. (arXiv:2312.07432, 2023) demonstrated that this approach scales. They fitted a 7,756-parameter hierarchical model to 2.6 million Brazilian auto policies using NumPyro on a single Nvidia A10 GPU, achieving an R² of 0.94 on holdout data. For large UK portfolios that need the full policy-level fit rather than the segment-level approach, the NumPyro backend is the practical path.
 
@@ -238,15 +239,15 @@ Krapu et al. (arXiv:2312.07432, 2023) demonstrated that this approach scales. Th
 ## Install
 
 ```bash
-pip install bayesian-pricing[pymc]
+uv add "bayesian-pricing[pymc]"
 ```
 
-The PyMC dependency is optional — the data validation and utility code runs without it, which keeps CI lightweight. The `[pymc]` extra pulls in PyMC 5.x, ArviZ, and PyTensor. For NumPyro GPU inference:
+The PyMC dependency is optional - the data validation and utility code runs without it, which keeps CI lightweight. The `[pymc]` extra pulls in PyMC 5.x, ArviZ, and PyTensor. For NumPyro GPU inference:
 
 ```bash
-pip install bayesian-pricing[numpyro]
+uv add "bayesian-pricing[numpyro]"
 ```
 
-Source is on [GitHub](https://github.com/burningcost/bayesian-pricing). The library is at version 0.1.0 — the core frequency and severity models are stable, and we consider the API for `HierarchicalFrequency`, `HierarchicalSeverity`, and `BayesianRelativities` settled. What is not yet built: spatial CAR components for geographic smoothing, temporal random walks for time-varying risk profiles, and the Credibility Transformer integration (Richman, Scognamiglio & Wüthrich, arXiv:2409.16653). Those are on the roadmap.
+Source is on [GitHub](https://github.com/burningcost/bayesian-pricing). The library is at version 0.1.0 - the core frequency and severity models are stable, and we consider the API for `HierarchicalFrequency`, `HierarchicalSeverity`, and `BayesianRelativities` settled. What is not yet built: spatial CAR components for geographic smoothing, temporal random walks for time-varying risk profiles, and the Credibility Transformer integration (Richman, Scognamiglio & Wüthrich, arXiv:2409.16653). Those are on the roadmap.
 
 The thin-cell problem is not going away. If anything it is getting worse as personal lines pricing moves toward more granular segmentation. Partial pooling is the principled answer. Use it.

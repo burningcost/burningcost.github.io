@@ -3,14 +3,14 @@ layout: post
 title: "Extracting Rating Relativities from GBMs with SHAP"
 date: 2026-03-05
 categories: [techniques]
-tags: [shap, gbm, lightgbm, relativities, pricing, python]
+tags: [shap, gbm, catboost, relativities, pricing, python]
 ---
 
 Every UK pricing team we've spoken to is in some version of the same situation: a GBM sitting on a server somewhere outperforming the production GLM, but nobody can get the relativities out of it. The regulator wants a factor table. Radar needs an import file. The head of pricing wants to challenge the model in terms they recognise.
 
 So the GBM sits in a notebook. The GLM goes to production. And the team loses the lift.
 
-We built `shap-relativities` to close that gap. It extracts multiplicative rating relativities from LightGBM and XGBoost models using SHAP values — the same format as `exp(beta)` from a GLM, with confidence intervals, exposure weighting, and a validation check that the numbers actually reconstruct the model's predictions.
+We built `shap-relativities` to close that gap. It extracts multiplicative rating relativities from CatBoost models using SHAP values - the same format as `exp(beta)` from a GLM, with confidence intervals, exposure weighting, and a validation check that the numbers actually reconstruct the model's predictions.
 
 ---
 
@@ -18,9 +18,9 @@ We built `shap-relativities` to close that gap. It extracts multiplicative ratin
 
 The obvious alternative to SHAP is a partial dependence plot. Fix all other features at their observed values, vary the feature of interest, average the predictions. You get a curve. It shows you something.
 
-What it doesn't show you is how much of each individual prediction is attributable to that feature. PDPs show marginal effects averaged across the portfolio. They don't decompose predictions. If you have two features that are correlated, a PDP for one of them will absorb some of the other's effect — and you won't know which direction.
+What it doesn't show you is how much of each individual prediction is attributable to that feature. PDPs show marginal effects averaged across the portfolio. They don't decompose predictions. If you have two features that are correlated, a PDP for one of them will absorb some of the other's effect - and you won't know which direction.
 
-SHAP has a different guarantee. The Shapley axioms — efficiency, symmetry, null player, linearity — mean that SHAP values sum exactly to the model output. For a LightGBM Poisson model:
+SHAP has a different guarantee. The Shapley axioms - efficiency, symmetry, null player, linearity - mean that SHAP values sum exactly to the model output. For a CatBoost Poisson model:
 
 ```
 log(μ_i) = expected_value + SHAP_area_i + SHAP_ncd_i + SHAP_age_i + ...
@@ -47,42 +47,54 @@ SE = shap_std / sqrt(n_obs)
 CI = exp(mean_shap ± z * SE - base_shap)
 ```
 
-These are data uncertainty intervals — they quantify how precisely we've estimated each level's mean SHAP contribution given the portfolio. They do not capture model uncertainty from the GBM fitting process itself. That distinction matters, and we come back to it in the limitations section.
+These are data uncertainty intervals - they quantify how precisely we've estimated each level's mean SHAP contribution given the portfolio. They do not capture model uncertainty from the GBM fitting process itself. That distinction matters, and we come back to it in the limitations section.
 
 ---
 
 ## A worked example
 
-We'll train a LightGBM frequency model on synthetic UK motor data with a known data-generating process, then extract relativities and compare them to the true parameters.
+We'll train a CatBoost frequency model on synthetic UK motor data with a known data-generating process, then extract relativities and compare them to the true parameters.
 
 ```python
-import lightgbm as lgb
-import pandas as pd
+import polars as pl
+from catboost import CatBoostRegressor, Pool
 from shap_relativities import SHAPRelativities
 
-# Assume df has: exposure, claims, area (A/B/C/D), ncd_years (0-5),
-# vehicle_age (numeric), driver_age (numeric)
+# Assume df is a Polars DataFrame with: exposure, claims, area (A/B/C/D),
+# ncd_years (0-5), vehicle_age (numeric), driver_age (numeric)
 
-X = df[["area", "ncd_years", "vehicle_age", "driver_age"]]
-y = df["claims"]
-exposure = df["exposure"]
+features = ["area", "ncd_years", "vehicle_age", "driver_age"]
+cat_features = ["area", "ncd_years"]
+
+# CatBoost requires pandas or numpy arrays; convert at the boundary
+X = df.select(features).to_pandas()
+y = df["claims"].to_numpy()
+exposure = df["exposure"].to_numpy()
+
+# Build a Pool with categorical features declared explicitly
+train_pool = Pool(
+    data=X,
+    label=y,
+    weight=exposure,
+    cat_features=cat_features,
+)
 
 # Train a Poisson frequency model
-lgb_params = {
-    "objective": "poisson",
-    "learning_rate": 0.05,
-    "num_leaves": 31,
-    "n_estimators": 500,
-}
-model = lgb.LGBMRegressor(**lgb_params)
-model.fit(X, y, sample_weight=exposure)
+model = CatBoostRegressor(
+    loss_function="Poisson",
+    learning_rate=0.05,
+    depth=6,
+    iterations=500,
+    verbose=0,
+)
+model.fit(train_pool)
 
 # Extract relativities
 sr = SHAPRelativities(
     model=model,
     X=X,
     exposure=exposure,
-    categorical_features=["area", "ncd_years"],
+    categorical_features=cat_features,
 )
 sr.fit()
 
@@ -104,7 +116,7 @@ rels = sr.extract_relativities(
 | ncd_years | 1 | 0.887 | 0.856 | 0.920 | 7923 | 6341.1 |
 | ... | ... | ... | ... | ... | ... | ... |
 
-For the validation test we ran on synthetic data where we knew the true DGP parameters, extracted relativities matched the true multiplicative parameters to within 2–3% across all area and NCD levels after 50,000 training policies. That's within the confidence intervals, which is exactly what we'd want to see.
+For the validation test we ran on synthetic data where we knew the true DGP parameters, extracted relativities matched the true multiplicative parameters to within 2-3% across all area and NCD levels after 50,000 training policies. That's within the confidence intervals, which is exactly what we'd want to see.
 
 ---
 
@@ -112,11 +124,11 @@ For the validation test we ran on synthetic data where we knew the true DGP para
 
 Without exposure weighting, a postcode with three policies in the training set gets the same vote as one with 30,000. In motor pricing, exposure periods vary (mid-term adjustments, cancellations), fleet accounts represent single policies but large exposures, and rare categories often have fewer than 30 observations.
 
-`SHAPRelativities` takes `exposure` as a `pd.Series` of earned policy years. Every weighted mean SHAP computation uses these as observation weights. The CLT standard error divides by `sqrt(n_obs)` — not `sqrt(exposure)` — because CLT applies to the count of independent observations, not their weight. This is the correct treatment.
+`SHAPRelativities` takes `exposure` as a numpy array of earned policy years. Every weighted mean SHAP computation uses these as observation weights. The CLT standard error divides by `sqrt(n_obs)` - not `sqrt(exposure)` - because CLT applies to the count of independent observations, not their weight. This is the correct treatment.
 
 If you don't pass exposure, all observations are weighted equally. That's fine for a balanced dataset, but for insurance portfolios it's almost never the right call.
 
-The `validate()` method includes a sparse-levels check that warns when any categorical level has fewer than 30 observations — the point at which the CLT assumption becomes shaky:
+The `validate()` method includes a sparse-levels check that warns when any categorical level has fewer than 30 observations - the point at which the CLT assumption becomes shaky:
 
 ```python
 checks = sr.validate()
@@ -130,13 +142,13 @@ print(checks["sparse_levels"])
 #   message="4 levels have < 30 observations: ncd_years=5 (n=17), ...")
 ```
 
-The reconstruction check verifies that `exp(shap.sum(axis=1) + expected_value)` matches the model's own predictions within `1e-4`. If this fails, the explainer was set up incorrectly — almost always a mismatch between the model's link function and the SHAP output type.
+The reconstruction check verifies that `exp(shap.sum(axis=1) + expected_value)` matches the model's own predictions within `1e-4`. If this fails, the explainer was set up incorrectly - almost always a mismatch between the model's link function and the SHAP output type.
 
 ---
 
 ## Continuous features
 
-For continuous features like `vehicle_age` and `driver_age`, level-by-level aggregation doesn't make sense — every value is distinct. `SHAPRelativities` handles these differently: it returns per-observation SHAP values and provides a smoothed curve via `extract_continuous_curve()`:
+For continuous features like `vehicle_age` and `driver_age`, level-by-level aggregation doesn't make sense - every value is distinct. `SHAPRelativities` handles these differently: it returns per-observation SHAP values and provides a smoothed curve via `extract_continuous_curve()`:
 
 ```python
 age_curve = sr.extract_continuous_curve(
@@ -147,7 +159,7 @@ age_curve = sr.extract_continuous_curve(
 # Returns DataFrame: feature_value, relativity, lower_ci, upper_ci
 ```
 
-LOESS smoothing (via statsmodels) works well for most features. Use `smooth_method="isotonic"` when you have a strong theoretical prior that the relativity should be monotone — younger drivers are higher risk, age can only increase relativity up to a point. Isotonic regression will enforce that without adding parametric assumptions about the shape.
+LOESS smoothing (via statsmodels) works well for most features. Use `smooth_method="isotonic"` when you have a strong theoretical prior that the relativity should be monotone - younger drivers are higher risk, age can only increase relativity up to a point. Isotonic regression will enforce that without adding parametric assumptions about the shape.
 
 ---
 
@@ -155,11 +167,11 @@ LOESS smoothing (via statsmodels) works well for most features. Use `smooth_meth
 
 Three things to be honest about when presenting SHAP relativities to regulators or pricing committees.
 
-**Correlated features.** SHAP attribution for correlated features is not uniquely defined under the default `tree_path_dependent` method. Area and vehicle deprivation index will share attribution in a way that depends on tree split order. You can switch to `feature_perturbation="interventional"` and pass a background dataset — this corrects for correlations using marginalisation — but it's substantially slower and requires a representative background sample. Document the choice you made.
+**Correlated features.** SHAP attribution for correlated features is not uniquely defined under the default `tree_path_dependent` method. Area and vehicle deprivation index will share attribution in a way that depends on tree split order. You can switch to `feature_perturbation="interventional"` and pass a background dataset - this corrects for correlations using marginalisation - but it's substantially slower and requires a representative background sample. Document the choice you made.
 
 **Interaction effects.** TreeSHAP allocates interaction effects back to individual features by default. If area and vehicle age have an interaction in the model, some of that interaction gets attributed to area and some to vehicle age, but not in a way that cleanly separates main effects from interactions. `shap_interaction_values()` gives pure main effects, but it's O(n × p²) and quickly becomes infeasible on large portfolios.
 
-**Model uncertainty.** The CLT intervals capture data uncertainty — how well we've estimated each level's mean SHAP contribution. They say nothing about whether the GBM itself is well-specified, whether it would give different relativities on a different data split, or whether the feature contributions are stable across refits. For a full uncertainty picture you'd need to bootstrap across model refits. We haven't implemented that yet; it's on the roadmap.
+**Model uncertainty.** The CLT intervals capture data uncertainty - how well we've estimated each level's mean SHAP contribution. They say nothing about whether the GBM itself is well-specified, whether it would give different relativities on a different data split, or whether the feature contributions are stable across refits. For a full uncertainty picture you'd need to bootstrap across model refits. We haven't implemented that yet; it's on the roadmap.
 
 ---
 
@@ -174,10 +186,10 @@ The correct approach is mSHAP (multiplicative SHAP), proposed by Lindstrom et al
 ## Getting started
 
 ```bash
-pip install shap-relativities
+uv add shap-relativities
 ```
 
-The library supports LightGBM Boosters, LightGBM sklearn API models (`LGBMRegressor`, `LGBMClassifier`), and XGBoost Boosters. Log-link objectives only — Poisson, Tweedie, Gamma. If you pass a model with a linear link, the SHAP values will be in linear space and the `exp()` transformation will give you nonsense.
+The library supports CatBoost models with log-link objectives - Poisson, Tweedie, Gamma. If you pass a model with a linear link, the SHAP values will be in linear space and the `exp()` transformation will give you nonsense.
 
 For cases where you don't need the intermediate object:
 
@@ -185,9 +197,9 @@ For cases where you don't need the intermediate object:
 from shap_relativities import extract_relativities
 
 rels = extract_relativities(
-    model=lgb_model,
+    model=cb_model,
     X=X_train,
-    exposure=df["exposure"],
+    exposure=exposure,
     categorical_features=["area", "ncd_years"],
     base_levels={"area": "A", "ncd_years": 0},
 )

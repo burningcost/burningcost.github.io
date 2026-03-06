@@ -3,16 +3,16 @@ layout: post
 title: "Conformal Prediction Intervals for Insurance Pricing Models"
 date: 2026-03-06
 categories: [techniques]
-tags: [conformal-prediction, gbm, lightgbm, uncertainty, tweedie, pricing, python]
+tags: [conformal-prediction, gbm, catboost, uncertainty, tweedie, pricing, python]
 ---
 
 Your Tweedie GBM gives point estimates. That is a problem.
 
 A point estimate tells you the model's best guess for expected loss cost. It tells you nothing about how confident the model is in that guess, which varies enormously across the portfolio. A straightforward risk in a dense area of the feature space with thousands of similar policies behind it is not the same as an unusual commercial fleet risk that sits in a sparse corner. The model gives you a number in both cases. Without uncertainty quantification, you cannot tell them apart.
 
-The standard approach to this is parametric confidence intervals — bootstrap the GLM coefficients, or propagate variance through the Tweedie dispersion parameter. Both approaches depend on distributional assumptions. If the model is misspecified (and it always is), the intervals are wrong in a way that is difficult to characterise.
+The standard approach to this is parametric confidence intervals - bootstrap the GLM coefficients, or propagate variance through the Tweedie dispersion parameter. Both approaches depend on distributional assumptions. If the model is misspecified (and it always is), the intervals are wrong in a way that is difficult to characterise.
 
-Conformal prediction offers a different kind of guarantee. It does not need to assume anything about the error distribution. It produces intervals that contain the true value at least 90% of the time — not in expectation conditional on the model being correct, but unconditionally, as a finite-sample guarantee.
+Conformal prediction offers a different kind of guarantee. It does not need to assume anything about the error distribution. It produces intervals that contain the true value at least 90% of the time - not in expectation conditional on the model being correct, but unconditionally, as a finite-sample guarantee.
 
 We built [`insurance-conformal`](https://github.com/burningcost/insurance-conformal) to apply conformal prediction to insurance pricing models. The key contribution is handling the heteroscedasticity that standard conformal implementations ignore.
 
@@ -20,7 +20,7 @@ We built [`insurance-conformal`](https://github.com/burningcost/insurance-confor
 
 ## What conformal prediction guarantees
 
-Split conformal prediction works as follows. You have a fitted model. You hold out a calibration set — data the model has never seen. For each calibration observation, you compute a non-conformity score: a number that measures how badly the model was wrong for that observation. Then, for a target miscoverage rate α, you find the (1 - α) quantile of those calibration scores. When predicting on new observations, you construct an interval around each point prediction using that quantile.
+Split conformal prediction works as follows. You have a fitted model. You hold out a calibration set - data the model has never seen. For each calibration observation, you compute a non-conformity score: a number that measures how badly the model was wrong for that observation. Then, for a target miscoverage rate α, you find the (1 - α) quantile of those calibration scores. When predicting on new observations, you construct an interval around each point prediction using that quantile.
 
 The coverage guarantee is:
 
@@ -28,7 +28,7 @@ The coverage guarantee is:
 P(y_test ∈ [lower, upper]) ≥ 1 - α
 ```
 
-This holds for any data distribution and any model, as long as the calibration set was genuinely held out from training and the calibration and test data are exchangeable. That last word — exchangeable — roughly means "drawn from the same distribution in the same order". In insurance, it means you should calibrate on recent experience and test on more recent experience. It does not mean you can calibrate on 2023 and test on 2019.
+This holds for any data distribution and any model, as long as the calibration set was genuinely held out from training and the calibration and test data are exchangeable. That last word - exchangeable - roughly means "drawn from the same distribution in the same order". In insurance, it means you should calibrate on recent experience and test on more recent experience. It does not mean you can calibrate on 2023 and test on 2019.
 
 The split conformal algorithm itself is twenty lines of code. The hard part is choosing the right non-conformity score.
 
@@ -36,7 +36,7 @@ The split conformal algorithm itself is twenty lines of code. The hard part is c
 
 ## Why raw residuals are wrong for insurance data
 
-Most conformal prediction implementations — and all general-purpose libraries — use the absolute residual as the non-conformity score:
+Most conformal prediction implementations - and all general-purpose libraries - use the absolute residual as the non-conformity score:
 
 ```
 score(y, ŷ) = |y - ŷ|
@@ -62,7 +62,7 @@ interval = ŷ ± q × ŷ^(p/2)
 
 where q is the calibration quantile. This produces intervals that automatically widen proportionally with risk size, which is what the data's variance structure requires.
 
-The practical effect is approximately 30% narrower intervals with identical coverage guarantees. This is not free — you are paying with a slightly more involved score function — but it is an improvement with no downside. The result is based on Manna et al. (2025), arXiv:2507.06921.
+The practical effect is approximately 30% narrower intervals with identical coverage guarantees. This is not free - you are paying with a slightly more involved score function - but it is an improvement with no downside. The result is based on Manna et al. (2025), arXiv:2507.06921.
 
 ---
 
@@ -71,26 +71,27 @@ The practical effect is approximately 30% narrower intervals with identical cove
 Install:
 
 ```bash
-pip install insurance-conformal
+uv add insurance-conformal
 
-# LightGBM support:
-pip install "insurance-conformal[lightgbm]"
+# CatBoost support:
+uv add "insurance-conformal[catboost]"
 ```
 
 The workflow mirrors what you already do. Fit the model, then wrap it:
 
 ```python
-import lightgbm as lgb
+from catboost import CatBoostRegressor, Pool
 from insurance_conformal import InsuranceConformalPredictor
 
-model = lgb.LGBMRegressor(objective="tweedie", tweedie_variance_power=1.5)
-model.fit(X_train, y_train)
+train_pool = Pool(data=X_train, label=y_train)
+model = CatBoostRegressor(loss_function="Tweedie:variance_power=1.5", verbose=0)
+model.fit(train_pool)
 
 cp = InsuranceConformalPredictor(
     model=model,
     nonconformity="pearson_weighted",  # default for Tweedie models
     distribution="tweedie",
-    # tweedie_power is auto-detected from LightGBM params
+    tweedie_power=1.5,
 )
 ```
 
@@ -111,7 +112,8 @@ X_train, X_cal, y_train, y_cal, _, _ = temporal_split(
     date_col="accident_year",
 )
 
-model.fit(X_train, y_train)
+train_pool = Pool(data=X_train, label=y_train)
+model.fit(train_pool)
 cp.calibrate(X_cal, y_cal)
 ```
 
@@ -128,7 +130,7 @@ print(intervals.head())
 # 2    0.1820  1.2742   4.9621
 ```
 
-`alpha=0.10` gives 90% prediction intervals. The lower bound is clipped at zero unconditionally — insurance losses are non-negative, and intervals with negative lower bounds are not useful.
+`alpha=0.10` gives 90% prediction intervals. The lower bound is clipped at zero unconditionally - insurance losses are non-negative, and intervals with negative lower bounds are not useful.
 
 ---
 
@@ -136,7 +138,7 @@ print(intervals.head())
 
 The marginal coverage guarantee is a floor averaged across all test observations. In practice, that average can conceal a serious problem: correct overall coverage with badly miscovered tails.
 
-Consider a model with 90.1% marginal coverage. Sounds fine. If coverage in the top decile of predicted risk is 65%, you have a material problem — the portfolio's large risks have intervals that miss roughly one claim in three. An insurer relying on these intervals for reserving or capacity planning would be materially misled.
+Consider a model with 90.1% marginal coverage. Sounds fine. If coverage in the top decile of predicted risk is 65%, you have a material problem - the portfolio's large risks have intervals that miss roughly one claim in three. An insurer relying on these intervals for reserving or capacity planning would be materially misled.
 
 The coverage-by-decile diagnostic exposes this:
 
@@ -159,7 +161,7 @@ print(diag)
 9      10          5.8340    400     0.898             0.90
 ```
 
-This is what well-calibrated intervals look like with `pearson_weighted`. Coverage is flat across deciles — the score is correctly accounting for variance structure.
+This is what well-calibrated intervals look like with `pearson_weighted`. Coverage is flat across deciles - the score is correctly accounting for variance structure.
 
 For comparison, here is the same data with the `raw` absolute residual score:
 
@@ -174,7 +176,7 @@ For comparison, here is the same data with the `raw` absolute residual score:
 9      10          5.8340    400     0.723             0.90
 ```
 
-Overall marginal coverage: 90.3%. Top decile coverage: 72.3%. The raw score overtreats low-risk policies — their intervals are much wider than necessary — and undertreats large risks, which are under-covered by 17 percentage points. The aggregate number hides both failures simultaneously.
+Overall marginal coverage: 90.3%. Top decile coverage: 72.3%. The raw score overtreats low-risk policies - their intervals are much wider than necessary - and undertreats large risks, which are under-covered by 17 percentage points. The aggregate number hides both failures simultaneously.
 
 Run the full diagnostic and plot with:
 
@@ -185,7 +187,7 @@ fig = cp.coverage_plot(X_test, y_test, alpha=0.10)
 fig.savefig("coverage_by_decile.png", dpi=150)
 ```
 
-`coverage_plot()` draws the decile coverage series with Wilson score confidence bands, which correctly propagate finite-sample uncertainty in the coverage estimate. With 400 observations per decile, those bands are roughly ±4pp — enough to distinguish a 65% coverage reading from a 90% one unambiguously.
+`coverage_plot()` draws the decile coverage series with Wilson score confidence bands, which correctly propagate finite-sample uncertainty in the coverage estimate. With 400 observations per decile, those bands are roughly ±4pp - enough to distinguish a 65% coverage reading from a 90% one unambiguously.
 
 ---
 
@@ -202,7 +204,7 @@ fig.savefig("coverage_by_decile.png", dpi=150)
 Ranked by interval width (narrowest first, coverage identical):
 `pearson_weighted ≥ deviance ≥ anscombe > pearson > raw`
 
-Use `pearson_weighted` unless you have a specific reason not to. The Tweedie power is auto-detected from LightGBM model parameters or from sklearn's `TweedieRegressor.power`. If auto-detection fails, the library warns and defaults to p=1.5. Pass `tweedie_power=` explicitly if your model is something else:
+Use `pearson_weighted` unless you have a specific reason not to. The Tweedie power is read from CatBoost's `loss_function` parameter or passed explicitly. If auto-detection fails, the library warns and defaults to p=1.5. Pass `tweedie_power=` explicitly if your model is something else:
 
 ```python
 cp = InsuranceConformalPredictor(
@@ -216,7 +218,7 @@ cp = InsuranceConformalPredictor(
 
 ## Design choices
 
-**Split conformal, not cross-conformal.** Cross-conformal is more statistically efficient — it uses the full dataset for both training and calibration by refitting the model on each fold. For a LightGBM model that takes three hours to train, this is not practical. Split conformal trains once, calibrates once, and gives the same finite-sample guarantee with a smaller calibration set as the only cost.
+**Split conformal, not cross-conformal.** Cross-conformal is more statistically efficient - it uses the full dataset for both training and calibration by refitting the model on each fold. For a CatBoost model that takes three hours to train, this is not practical. Split conformal trains once, calibrates once, and gives the same finite-sample guarantee with a smaller calibration set as the only cost.
 
 **No MAPIE dependency.** MAPIE is a good library, but it does not expose the insurance-specific scores here. The split conformal algorithm itself is simple enough to own: `conformal_quantile()` is 20 lines, plus the score functions. We have no interest in adding a dependency for functionality we can write in an afternoon.
 
@@ -226,18 +228,18 @@ cp = InsuranceConformalPredictor(
 
 ## What conformal prediction is not
 
-It is not a way to get narrower intervals than your model's prediction accuracy warrants. If the model has large residuals, the calibration quantile will be large, and the intervals will be wide. The coverage guarantee is a floor, not a ceiling — conformal prediction cannot make a bad model look good.
+It is not a way to get narrower intervals than your model's prediction accuracy warrants. If the model has large residuals, the calibration quantile will be large, and the intervals will be wide. The coverage guarantee is a floor, not a ceiling - conformal prediction cannot make a bad model look good.
 
-It is also not a replacement for model calibration. A model that is systematically biased — for example, one that consistently underpredicts large losses — will produce intervals that are wide enough to achieve marginal coverage but shifted in a way that is diagnostically revealing. The coverage-by-decile diagnostic will show this as a pattern of low coverage on one side of the decile distribution, which points back to the model, not the conformal wrapper.
+It is also not a replacement for model calibration. A model that is systematically biased - for example, one that consistently underpredicts large losses - will produce intervals that are wide enough to achieve marginal coverage but shifted in a way that is diagnostically revealing. The coverage-by-decile diagnostic will show this as a pattern of low coverage on one side of the decile distribution, which points back to the model, not the conformal wrapper.
 
 ---
 
 ## Getting started
 
 ```bash
-pip install insurance-conformal
+uv add insurance-conformal
 ```
 
-Source and issue tracker on [GitHub](https://github.com/burningcost/insurance-conformal). The library is built around a single entry point — `InsuranceConformalPredictor` — and wraps any sklearn-compatible model. The coverage diagnostics work independently of the predictor via `CoverageDiagnostics` if you have intervals from another source and want to apply the same framework.
+Source and issue tracker on [GitHub](https://github.com/burningcost/insurance-conformal). The library is built around a single entry point - `InsuranceConformalPredictor` - and wraps any sklearn-compatible model. The coverage diagnostics work independently of the predictor via `CoverageDiagnostics` if you have intervals from another source and want to apply the same framework.
 
-The first thing to check after calibrating is always `coverage_by_decile()`. If the top decile is more than 5 percentage points below target, switch from `raw` to `pearson_weighted`. If it is still off, try `deviance`. If coverage is non-monotone across deciles — high in the middle, low at both ends — your calibration data is not representative of the test distribution, and the temporal split is the first place to investigate.
+The first thing to check after calibrating is always `coverage_by_decile()`. If the top decile is more than 5 percentage points below target, switch from `raw` to `pearson_weighted`. If it is still off, try `deviance`. If coverage is non-monotone across deciles - high in the middle, low at both ends - your calibration data is not representative of the test distribution, and the temporal split is the first place to investigate.

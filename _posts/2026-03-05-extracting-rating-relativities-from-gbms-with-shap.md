@@ -53,7 +53,7 @@ These are data uncertainty intervals — they quantify how precisely we've estim
 
 ## A worked example
 
-Let's train a LightGBM frequency model on synthetic UK motor data with a known data-generating process, then extract relativities and compare them to the true parameters.
+We'll train a LightGBM frequency model on synthetic UK motor data with a known data-generating process, then extract relativities and compare them to the true parameters.
 
 ```python
 import lightgbm as lgb
@@ -104,7 +104,7 @@ rels = sr.extract_relativities(
 | ncd_years | 1 | 0.887 | 0.856 | 0.920 | 7923 | 6341.1 |
 | ... | ... | ... | ... | ... | ... | ... |
 
-For the validation test we ran on synthetic data where we knew the true DGP parameters, extracted relativities matched the true multiplicative parameters to within 2-3% across all area and NCD levels after 50,000 training policies. That's within the confidence intervals, which is exactly what we'd want to see.
+For the validation test we ran on synthetic data where we knew the true DGP parameters, extracted relativities matched the true multiplicative parameters to within 2–3% across all area and NCD levels after 50,000 training policies. That's within the confidence intervals, which is exactly what we'd want to see.
 
 ---
 
@@ -167,14 +167,14 @@ Three things to be honest about when presenting SHAP relativities to regulators 
 
 Most frequency×severity models can't be analysed with this approach directly. You can extract relativities from the frequency model and the severity model separately, but you can't simply multiply them together and get a valid decomposition of the pure premium. The scales are different, the link functions may differ, and the portfolio averages don't cancel cleanly.
 
-The correct approach is mSHAP (multiplicative SHAP), which was proposed by Lindstrom et al. in 2022 and works for two-part models by combining SHAP values in prediction space rather than log space. We're building this as a second module. For now: extract freq and severity relativities separately, present them side by side, and be explicit that the pure premium relativities require a further combining step.
+The correct approach is mSHAP (multiplicative SHAP), proposed by Lindstrom et al. (2022), which works for two-part models by combining SHAP values in prediction space rather than log space. We're building this as a second module. For now: extract freq and severity relativities separately, present them side by side, and be explicit that the pure premium relativities require a further combining step.
 
 ---
 
 ## Getting started
 
 ```bash
-pip install "shap-relativities[ml]"
+pip install shap-relativities
 ```
 
 The library supports LightGBM Boosters, LightGBM sklearn API models (`LGBMRegressor`, `LGBMClassifier`), and XGBoost Boosters. Log-link objectives only — Poisson, Tweedie, Gamma. If you pass a model with a linear link, the SHAP values will be in linear space and the `exp()` transformation will give you nonsense.

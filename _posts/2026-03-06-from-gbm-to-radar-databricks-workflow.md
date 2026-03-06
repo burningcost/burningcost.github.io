@@ -411,10 +411,10 @@ Now the honest caveats, because they matter and they do not disappear by running
 
 | Library | Purpose | Install |
 |---------|---------|---------|
-| [`shap-relativities`](https://github.com/burningcost/shap-relativities) | SHAP extraction from CatBoost | `uv uv pip install git+https://github.com/burningcost/shap-relativities` |
-| [`insurance-cv`](https://github.com/burningcost/insurance-cv) | Temporal cross-validation splits | `uv uv pip install git+https://github.com/burningcost/insurance-cv` |
-| `catboost` | Model training | `uv uv pip install catboost` |
-| `statsmodels` | GLM benchmark | `uv uv pip install statsmodels` |
+| [`shap-relativities`](https://github.com/burningcost/shap-relativities) | SHAP extraction from CatBoost | `uv pip install git+https://github.com/burningcost/shap-relativities` |
+| [`insurance-cv`](https://github.com/burningcost/insurance-cv) | Temporal cross-validation splits | `uv pip install git+https://github.com/burningcost/insurance-cv` |
+| `catboost` | Model training | `uv add catboost` |
+| `statsmodels` | GLM benchmark | `uv add statsmodels` |
 | `mlflow` | Experiment tracking | Pre-installed on Databricks Runtime 14+ |
 
 The full notebook set - `01_data_prep`, `02_train_extract`, `03_export` - and the Job JSON definition are available as a downloadable archive. The notebooks map 1:1 to the sections above and can be imported directly into a Databricks workspace.

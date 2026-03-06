@@ -10,7 +10,7 @@ Every UK motor insurer runs some version of the same process: take postcode sect
 
 Except the territory model is not a solved problem. It is a problem that most teams have given up trying to solve properly.
 
-Here is what k-means territory banding actually does. You have 11,200 postcode sectors. Most of them have thin data - median claim count per sector per year for a mid-sized UK motor book is probably 20–30 claims. You compute a loss ratio per sector from that noisy data. You run k-means on the noisy loss ratios. You get bands that reflect the noise as much as the signal. Adjacent sectors end up in different bands not because the underlying risk differs but because one of them happened to have a bad year. You then apply those bands as if they were the truth.
+Here is what k-means territory banding actually does. You have 11,200 postcode sectors. Most of them have thin data - median claim count per sector per year for a mid-sized UK motor book is probably 20-30 claims. You compute a loss ratio per sector from that noisy data. You run k-means on the noisy loss ratios. You get bands that reflect the noise as much as the signal. Adjacent sectors end up in different bands not because the underlying risk differs but because one of them happened to have a bad year. You then apply those bands as if they were the truth.
 
 The classical fix for thin data is credibility theory. Bühlmann-Straub says: blend the segment's own experience with the portfolio prior, with the blend weight proportional to the exposure and inversely proportional to between-group variance. We [use this elsewhere]({{ site.baseurl }}{% post_url 2026-03-06-buhlmann-straub-credibility-in-python %}) in the rating model. But standard credibility is one-dimensional: it borrows from the portfolio mean, not from neighbours. It does not know that SW12 is adjacent to SW11 and should probably have a similar risk profile.
 
@@ -22,7 +22,7 @@ Geographic credibility should borrow from neighbours. The BYM2 model does exactl
 
 UK motor pricing at postcode sector level means 11,200 parameters. The exposure distribution across those sectors is heavily skewed. Dense urban sectors - inner London, central Manchester - have thousands of policies. Rural sectors in mid-Wales or the Scottish Highlands may have 50. A GLM with postcode sector as a categorical predictor will fit 11,200 separate territory parameters with no pooling and no regularisation.
 
-Adjacent sectors can diverge by 30–40% on sparse data, purely because of sampling noise. Standard practice is to smooth this by banding - grouping sectors into 6 to 20 clusters. The smoothing is real but the method is ad hoc: k-means on historical loss ratios discards the spatial structure entirely. SW11 gets grouped with N1 because both had a bad year, not because they are geographically similar. The resulting bands have hard boundaries - a sector on one side of a band threshold gets a 20% loading; a sector 200 metres away on the other side gets nothing.
+Adjacent sectors can diverge by 30-40% on sparse data, purely because of sampling noise. Standard practice is to smooth this by banding - grouping sectors into 6 to 20 clusters. The smoothing is real but the method is ad hoc: k-means on historical loss ratios discards the spatial structure entirely. SW11 gets grouped with N1 because both had a bad year, not because they are geographically similar. The resulting bands have hard boundaries - a sector on one side of a band threshold gets a 20% loading; a sector 200 metres away on the other side gets nothing.
 
 GBMs handle territory differently but not better. The postcode sector as a high-cardinality categorical gets target-encoded or hashed. Lat/lon as continuous features produces rectangular splits. The GBM will learn spatial structure implicitly if it exists, but you cannot extract it. There is no "territory relativity" you can put in a factor table, sign off on, or file with the regulator. When the FCA asks how you derived your geographic factors, "the GBM did it" is not a satisfying answer.
 
@@ -74,9 +74,9 @@ The `ρ` parameter is the key diagnostic. It tells you, directly from the data, 
 `insurance-spatial` wraps BYM2 for UK personal lines territory pricing. It handles the adjacency construction, model fitting via PyMC v5's `pm.ICAR`, convergence diagnostics, and territory relativity extraction.
 
 ```bash
-uv pip install insurance-spatial
-uv pip install "insurance-spatial[geo]"      # adds geopandas + libpysal
-uv pip install "insurance-spatial[nutpie]"   # adds Rust-based NUTS sampler
+uv add insurance-spatial
+uv add "insurance-spatial[geo]"      # adds geopandas + libpysal
+uv add "insurance-spatial[nutpie]"   # adds Rust-based NUTS sampler
 ```
 
 The full pipeline in four steps.
@@ -143,7 +143,7 @@ result = model.fit(
 
 The exposure argument here is the expected claims from your base GLM, not raw policy-years. This is the two-stage approach: fit a standard GLM or GBM without territory first, extract sector-level expected claims, then pass the observed and expected counts to BYM2. The spatial model captures residual geographic variation after your other rating factors. The territory factor is auditable independently of the main model.
 
-If nutpie is installed, the library uses it automatically. For N≈2,500 postcode districts, expect 8–12 minutes on a modern machine with 4 chains. For the full 11,200 postcode sectors, plan for 20–30 minutes with nutpie on 8 cores.
+If nutpie is installed, the library uses it automatically. For N≈2,500 postcode districts, expect 8-12 minutes on a modern machine with 4 chains. For the full 11,200 postcode sectors, plan for 20-30 minutes with nutpie on 8 cores.
 
 ### Step 4: Check convergence and extract relativities
 
@@ -178,7 +178,7 @@ Do not skip the convergence check. MCMC without diagnostics is not production-re
 
 The posterior of `ρ` is more informative than most spatial model outputs because it directly answers the question you actually care about: is the geographic variation in my data spatially structured, or is it noise?
 
-A posterior mean `ρ` of 0.73 (with 95% CI of 0.51–0.92, as in the example above) means roughly 73% of the residual territory variance is spatially smooth. BYM2 is borrowing meaningfully from neighbours. The territory factors it produces are substantially better-calibrated than raw sector loss ratios.
+A posterior mean `ρ` of 0.73 (with 95% CI of 0.51-0.92, as in the example above) means roughly 73% of the residual territory variance is spatially smooth. BYM2 is borrowing meaningfully from neighbours. The territory factors it produces are substantially better-calibrated than raw sector loss ratios.
 
 A posterior mean `ρ` of 0.15 means the residual territory variation is mostly idiosyncratic. Perhaps your base GLM already captures most of the geographic signal through covariates like IMD score, urban density, or flood risk. In that case BYM2 degrades gracefully: the spatial component has little weight, and the territory factors approximate simple credibility weighting toward the mean.
 
@@ -251,24 +251,24 @@ sf = adj.scaling_factor  # may take several minutes for N=11,200
 # Next time: AdjacencyMatrix(W=W, areas=areas, _scaling_factor=sf)
 ```
 
-The MCMC itself scales linearly with N for the ICAR model - the pairwise difference formulation is O(N·K) where K≈6 mean neighbours, not O(N²). Published benchmarks on comparable models (NYC, N=2,095, 21 minutes on a 2019 dual-core machine) suggest 20–30 minutes on a modern 8-core machine for the full UK sector graph. Territory factors are updated annually in practice; a 30-minute overnight run is not a problem.
+The MCMC itself scales linearly with N for the ICAR model - the pairwise difference formulation is O(N·K) where K≈6 mean neighbours, not O(N²). Published benchmarks on comparable models (NYC, N=2,095, 21 minutes on a 2019 dual-core machine) suggest 20-30 minutes on a modern 8-core machine for the full UK sector graph. Territory factors are updated annually in practice; a 30-minute overnight run is not a problem.
 
 Install nutpie for the fastest sampling:
 
 ```bash
-uv pip install "insurance-spatial[nutpie]"
+uv add "insurance-spatial[nutpie]"
 ```
 
-nutpie uses a Rust NUTS implementation and is typically 2–5x faster than PyMC's default sampler for models of this type.
+nutpie uses a Rust NUTS implementation and is typically 2-5x faster than PyMC's default sampler for models of this type.
 
 ---
 
 ## Get the library
 
 ```bash
-uv pip install insurance-spatial
-uv pip install "insurance-spatial[geo]"     # geopandas + libpysal for real boundaries
-uv pip install "insurance-spatial[nutpie]"  # Rust sampler
+uv add insurance-spatial
+uv add "insurance-spatial[geo]"     # geopandas + libpysal for real boundaries
+uv add "insurance-spatial[nutpie]"  # Rust sampler
 ```
 
 Source is on [GitHub](https://github.com/burningcost/insurance-spatial). The library is at v0.1 - the core adjacency, BYM2 model, and diagnostics are stable. The covariate enrichment pipeline (IMD, police.uk crime, Environment Agency flood risk joins) and Stan backend are next.

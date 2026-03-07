@@ -30,12 +30,12 @@
 # MAGIC in subsequent cells.
 # MAGIC
 # MAGIC If you are using `uv` for package management in a local development environment,
-# MAGIC the equivalent is `uv add catboost polars`. In Databricks notebooks, `%pip install`
+# MAGIC the equivalent is `uv add catboost polars`. In Databricks notebooks, `uv pip install`
 # MAGIC is the right mechanism.
 
 # COMMAND ----------
 
-# MAGIC %pip install catboost polars
+# MAGIC %sh uv pip install catboost polars
 
 # COMMAND ----------
 

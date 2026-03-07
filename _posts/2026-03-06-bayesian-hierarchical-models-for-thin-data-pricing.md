@@ -88,7 +88,7 @@ import polars as pl
 from bayesian_pricing import HierarchicalFrequency, BayesianRelativities
 from bayesian_pricing.frequency import SamplerConfig
 
-# One row per rating cell — aggregate your policy data first
+# One row per rating cell - aggregate your policy data first
 # bayesian_pricing expects pandas at the model boundary; convert from Polars
 df = pl.DataFrame({
     "veh_group": ["Supermini", "Supermini", "Sports", "Sports", "Saloon"],

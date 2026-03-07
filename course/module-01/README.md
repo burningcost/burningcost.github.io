@@ -39,7 +39,7 @@ By the end of this module you have a working pricing workspace on Databricks Fre
 
 - The vendor pitch for Databricks. We explain what it actually is, what it is good at, and what problems it does not solve.
 - Pandas as the primary data manipulation library. We use Polars throughout. Pandas appears only at the Spark boundary where a conversion is unavoidable.
-- LightGBM or XGBoost. We use CatBoost.
+- Other GBM frameworks. We use CatBoost throughout.
 - Simplified patterns that do not reflect real-world constraints. The tutorial covers the greenfield ideal and acknowledges that most teams adopt Databricks into an existing IT estate where the catalog is already named something else and a platform team controls access.
 
 ---

@@ -312,10 +312,10 @@ We built this because UK pricing teams should not be doing credibility in Excel.
 
 ## References
 
-- Bühlmann, H. (1967). Experience rating and credibility. *ASTIN Bulletin*, 4(3), 199–207.
-- Bühlmann, H., & Straub, E. (1970). Glaubwürdigkeit für Schadensätze. *Mitteilungen der Vereinigung Schweizerischer Versicherungsmathematiker*, 70, 111–133.
+- Bühlmann, H. (1967). Experience rating and credibility. *ASTIN Bulletin*, 4(3), 199-207.
+- Bühlmann, H., & Straub, E. (1970). Glaubwürdigkeit für Schadensätze. *Mitteilungen der Vereinigung Schweizerischer Versicherungsmathematiker*, 70, 111-133.
 - Bühlmann, H., & Gisler, A. (2005). *A Course in Credibility Theory and its Applications*. Springer.
-- Ohlsson, E. (2008). Combining generalized linear models and credibility models in practice. *Scandinavian Actuarial Journal*, 2008(4), 301–314.
+- Ohlsson, E. (2008). Combining generalized linear models and credibility models in practice. *Scandinavian Actuarial Journal*, 2008(4), 301-314.
 - Richman, R., Scognamiglio, S., & Wüthrich, M.V. (2024). The Credibility Transformer. *arXiv:2409.16653*.
-- Robinson, G.K. (1991). That BLUP is a good thing: The estimation of random effects. *Statistical Science*, 6(1), 15–51.
+- Robinson, G.K. (1991). That BLUP is a good thing: The estimation of random effects. *Statistical Science*, 6(1), 15-51.
 - Dutang, C., Goulet, V., & Pigeon, M. actuar: Actuarial functions and heavy-tailed distributions. R package, CRAN.

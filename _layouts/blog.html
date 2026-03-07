@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{ page.title | escape }} — {{ site.title }}</title>
-  <meta name="description" content="{{ page.description | default: page.excerpt | strip_html | strip_newlines | truncate: 160 }}">
+  <title>{{ page.title | default: "Articles" }} — {{ site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -114,254 +114,151 @@
 
     .nav-cta:hover { background: var(--accent-hover) !important; }
 
-    /* ── Article header ──────────────────────────────────────────── */
+    /* ── Page header ─────────────────────────────────────────────── */
 
-    .article-header {
+    .page-header {
       background: linear-gradient(160deg, #0f1117 0%, #131928 55%, #0d1520 100%);
       padding: 3rem 1.5rem 2.5rem;
       position: relative;
       overflow: hidden;
     }
 
-    .article-header::before {
+    .page-header::before {
       content: '';
       position: absolute;
       top: -40%;
       left: 50%;
       transform: translateX(-50%);
-      width: 700px;
+      width: 600px;
       height: 400px;
       background: radial-gradient(ellipse, rgba(79,126,248,0.10) 0%, transparent 70%);
       pointer-events: none;
     }
 
-    .article-header-inner {
-      max-width: 780px;
+    .page-header-inner {
+      max-width: 1100px;
       margin: 0 auto;
       position: relative;
     }
 
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-muted);
-      text-decoration: none;
-      margin-bottom: 1.5rem;
-      transition: color 0.15s;
-    }
-
-    .back-link:hover { color: var(--text-secondary); text-decoration: none; }
-
-    .back-link::before { content: '←'; }
-
-    .article-meta {
-      font-size: 0.75rem;
+    .page-header-label {
+      display: inline-block;
+      font-size: 0.72rem;
       font-weight: 600;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent);
-      font-family: var(--mono);
-      margin-bottom: 0.85rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(79,126,248,0.25);
+      padding: 0.25rem 0.65rem;
+      border-radius: 100px;
+      margin-bottom: 1rem;
     }
 
-    .article-header h1 {
-      font-size: clamp(1.65rem, 4vw, 2.4rem);
+    .page-header h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
       font-weight: 800;
       letter-spacing: -0.03em;
       color: var(--white);
       line-height: 1.2;
-      margin-bottom: 1rem;
+      margin-bottom: 0.75rem;
     }
 
-    .article-desc {
+    .page-header-desc {
       font-size: 1rem;
       color: var(--text-secondary);
+      max-width: 600px;
       line-height: 1.65;
-      max-width: 640px;
     }
 
-    /* ── Article body ────────────────────────────────────────────── */
+    /* ── Blog listing ────────────────────────────────────────────── */
 
-    .article-body {
-      padding: 3rem 1.5rem 4rem;
+    .blog-body {
       background: var(--surface);
+      padding: 3rem 1.5rem 4rem;
     }
 
-    .article-content {
-      max-width: 780px;
+    .blog-inner {
+      max-width: 1100px;
       margin: 0 auto;
     }
 
-    /* Prose typography */
-
-    .article-content p {
-      font-size: 1.0rem;
-      line-height: 1.8;
-      color: #2d3148;
-      margin-bottom: 1.5rem;
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
     }
 
-    .article-content h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #1a1d2e;
-      margin: 2.5rem 0 1rem;
-      line-height: 1.3;
-    }
-
-    .article-content h3 {
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      color: #1a1d2e;
-      margin: 2rem 0 0.75rem;
-      line-height: 1.4;
-    }
-
-    .article-content h4 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: #1a1d2e;
-      margin: 1.5rem 0 0.5rem;
-    }
-
-    .article-content ul,
-    .article-content ol {
-      padding-left: 1.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .article-content li {
-      font-size: 1.0rem;
-      line-height: 1.75;
-      color: #2d3148;
-      margin-bottom: 0.35rem;
-    }
-
-    .article-content blockquote {
-      border-left: 3px solid var(--accent);
-      padding: 0.75rem 1.25rem;
-      margin: 1.75rem 0;
-      background: var(--surface-alt);
-      border-radius: 0 var(--radius) var(--radius) 0;
-    }
-
-    .article-content blockquote p {
-      margin-bottom: 0;
-      color: #3d4463;
-      font-style: italic;
-    }
-
-    .article-content hr {
-      border: none;
-      border-top: 1px solid var(--border);
-      margin: 2.5rem 0;
-    }
-
-    /* Inline code */
-    .article-content code {
-      font-family: var(--mono);
-      font-size: 0.845em;
-      background: #f1f3fa;
-      color: #3b4170;
-      padding: 0.15em 0.4em;
-      border-radius: 4px;
-      border: 1px solid #dde1ed;
-    }
-
-    /* Code blocks */
-    .article-content pre {
-      background: #0d1117;
-      border: 1px solid var(--navy-border);
+    .post-card {
+      border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 1.25rem 1.5rem;
-      overflow-x: auto;
-      margin: 1.75rem 0;
-      line-height: 1.6;
+      padding: 1.5rem;
+      background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      display: flex;
+      flex-direction: column;
     }
 
-    .article-content pre code {
-      font-family: var(--mono);
-      font-size: 0.85rem;
-      color: #c9d1d9;
-      background: none;
-      border: none;
-      padding: 0;
+    .post-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(79,126,248,0.1);
+      transform: translateY(-2px);
     }
 
-    /* Tables */
-    .article-content table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.75rem 0;
-      font-size: 0.9rem;
-    }
-
-    .article-content th {
-      text-align: left;
+    .post-date {
+      font-size: 0.72rem;
       font-weight: 600;
-      font-size: 0.75rem;
       letter-spacing: 0.06em;
       text-transform: uppercase;
       color: var(--text-muted);
-      padding: 0.65rem 1rem;
-      border-bottom: 2px solid var(--border);
-    }
-
-    .article-content td {
-      padding: 0.65rem 1rem;
-      border-bottom: 1px solid var(--border);
-      color: #3d4463;
-      vertical-align: top;
-    }
-
-    .article-content tr:last-child td { border-bottom: none; }
-
-    /* Post footer tags */
-    .post-tags {
-      margin-top: 2.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .tag {
-      font-size: 0.75rem;
-      font-weight: 600;
+      margin-bottom: 0.6rem;
       font-family: var(--mono);
-      color: var(--accent);
-      background: var(--accent-dim);
-      border: 1px solid rgba(79,126,248,0.2);
-      padding: 0.2rem 0.55rem;
-      border-radius: 100px;
-      letter-spacing: 0.02em;
     }
 
-    .article-back {
-      margin-top: 2.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
+    .post-card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a1d2e;
+      line-height: 1.4;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
     }
 
-    .article-back a {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4rem;
-      font-size: 0.875rem;
-      font-weight: 500;
+    .post-card-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .post-card-title a:hover {
       color: var(--accent);
       text-decoration: none;
     }
 
-    .article-back a::before { content: '←'; }
+    .post-card-excerpt {
+      font-size: 0.875rem;
+      color: #5a6278;
+      line-height: 1.6;
+      flex: 1;
+    }
 
-    .article-back a:hover { color: var(--accent-hover); text-decoration: none; }
+    .post-card-footer {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .post-read-more {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+
+    .post-read-more:hover {
+      color: var(--accent-hover);
+      text-decoration: none;
+    }
 
     /* ── Footer ──────────────────────────────────────────────────── */
 
@@ -417,10 +314,9 @@
     /* ── Responsive ──────────────────────────────────────────────── */
 
     @media (max-width: 768px) {
-      .article-header { padding: 2.5rem 1.25rem 2rem; }
+      .page-header { padding: 2.5rem 1.25rem 2rem; }
+      .post-grid { grid-template-columns: 1fr; }
       .nav-links { display: none; }
-      .article-body { padding: 2rem 1.25rem 3rem; }
-      .article-content pre { padding: 1rem; }
     }
   </style>
 </head>
@@ -440,61 +336,36 @@
     </div>
   </nav>
 
-  <!-- Article header -->
-  <div class="article-header">
-    <div class="article-header-inner">
-      <a href="/blog/" class="back-link">All articles</a>
-      <div class="article-meta">{{ page.date | date: "%d %B %Y" }}</div>
-      <h1>{{ page.title | escape }}</h1>
+  <!-- Page header -->
+  <div class="page-header">
+    <div class="page-header-inner">
+      <div class="page-header-label">Articles</div>
+      <h1>{{ page.title | default: "Articles" }}</h1>
       {% if page.description %}
-      <p class="article-desc">{{ page.description }}</p>
+      <p class="page-header-desc">{{ page.description }}</p>
       {% endif %}
     </div>
   </div>
 
-  <!-- Article body -->
-  <div class="article-body">
-    <div class="article-content">
-
-      <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "BlogPosting",
-        "headline": {{ page.title | jsonify }},
-        "description": {{ page.description | default: page.excerpt | strip_html | strip_newlines | truncate: 160 | jsonify }},
-        "datePublished": "{{ page.date | date_to_xmlschema }}",
-        "dateModified": "{{ page.last_modified_at | default: page.date | date_to_xmlschema }}",
-        "author": {
-          "@type": "Organization",
-          "name": "Burning Cost",
-          "url": "https://burningcost.github.io"
-        },
-        "publisher": {
-          "@type": "Organization",
-          "name": "Burning Cost",
-          "url": "https://burningcost.github.io"
-        },
-        "url": {{ page.url | absolute_url | jsonify }},
-        "mainEntityOfPage": {
-          "@type": "WebPage",
-          "@id": {{ page.url | absolute_url | jsonify }}
-        }{% if page.tags and page.tags.size > 0 %},
-        "keywords": {{ page.tags | join: ", " | jsonify }}{% endif %}
-      }
-      </script>
-
-      {{ content }}
-
-      {% if page.tags and page.tags.size > 0 %}
-      <div class="post-tags">
-        {% for tag in page.tags %}<span class="tag">{{ tag }}</span>{% endfor %}
+  <!-- Post grid -->
+  <div class="blog-body">
+    <div class="blog-inner">
+      <div class="post-grid">
+        {% for post in site.posts %}
+        <div class="post-card">
+          <div class="post-date">{{ post.date | date: "%d %b %Y" }}</div>
+          <div class="post-card-title"><a href="{{ post.url | relative_url }}">{{ post.title }}</a></div>
+          {% if post.description %}
+          <p class="post-card-excerpt">{{ post.description | truncate: 160 }}</p>
+          {% elsif post.excerpt %}
+          <p class="post-card-excerpt">{{ post.excerpt | strip_html | truncate: 160 }}</p>
+          {% endif %}
+          <div class="post-card-footer">
+            <a href="{{ post.url | relative_url }}" class="post-read-more">Read article &rarr;</a>
+          </div>
+        </div>
+        {% endfor %}
       </div>
-      {% endif %}
-
-      <div class="article-back">
-        <a href="/blog/">Back to all articles</a>
-      </div>
-
     </div>
   </div>
 

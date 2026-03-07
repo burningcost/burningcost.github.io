@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Module 6: Credibility and Bayesian Pricing"
+---
+
 # Credibility & Bayesian Pricing - The Thin-Cell Problem
 
 ---

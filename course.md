@@ -185,7 +185,7 @@ permalink: /course/
         </ul>
         <div class="module-links">
           <a href="/course/module-01/" class="module-link">Module overview</a>
-          <a href="/course/module-01/tutorial.md" class="module-link">Preview tutorial</a>
+          <a href="/course/module-01/tutorial" class="module-link">Preview tutorial</a>
         </div>
       </div>
     </div>
@@ -210,7 +210,7 @@ permalink: /course/
         </ul>
         <div class="module-links">
           <a href="/course/module-02/" class="module-link">Module overview</a>
-          <a href="/course/module-02/tutorial.md" class="module-link">Preview tutorial</a>
+          <a href="/course/module-02/tutorial" class="module-link">Preview tutorial</a>
         </div>
       </div>
     </div>
@@ -256,7 +256,7 @@ permalink: /course/
         </ul>
         <div class="module-links">
           <a href="/course/module-04/" class="module-link">Module overview</a>
-          <a href="/course/module-04/tutorial.md" class="module-link">Preview tutorial</a>
+          <a href="/course/module-04/tutorial" class="module-link">Preview tutorial</a>
         </div>
       </div>
     </div>
@@ -302,7 +302,7 @@ permalink: /course/
         </ul>
         <div class="module-links">
           <a href="/course/module-06/" class="module-link">Module overview</a>
-          <a href="/course/module-06/tutorial.md" class="module-link">Preview tutorial</a>
+          <a href="/course/module-06/tutorial" class="module-link">Preview tutorial</a>
         </div>
       </div>
     </div>
@@ -352,29 +352,28 @@ permalink: /course/
   </div>
 </section>
 
-<!-- SOCIAL PROOF -->
+<!-- OPEN SOURCE PROOF -->
 <section class="proof">
   <div class="proof-inner">
     <span class="section-label">Why trust us on this</span>
-    <h2 class="section-h2">Built by practitioners who have done this at UK insurers</h2>
+    <h2 class="section-h2">The work is open source. Read the code, run the tests.</h2>
 
-    <div class="proof-grid">
-      <div class="proof-card">
-        <p>"The SHAP relativities module solved a problem we had been wrestling with for two years: how to present a GBM to a pricing committee used to Emblem. The factor table format made it reviewable."</p>
-        <div class="proof-card-author">Pricing actuary</div>
-        <div class="proof-card-role">UK personal lines insurer - early reader</div>
+    <div class="proof-stats-row">
+      <div class="proof-stat">
+        <div class="proof-stat-number">12</div>
+        <div class="proof-stat-label">open-source libraries on PyPI</div>
       </div>
-      <div class="proof-card">
-        <p>"I spent three months adapting generic CatBoost tutorials to insurance data before finding this. The walk-forward cross-validation section alone would have saved me weeks."</p>
-        <div class="proof-card-author">Pricing analyst</div>
-        <div class="proof-card-role">UK motor insurer - early reader</div>
+      <div class="proof-stat">
+        <div class="proof-stat-number">600+</div>
+        <div class="proof-stat-label">tests with actuarial assertions</div>
       </div>
-      <div class="proof-card">
-        <p>"The constrained rate optimisation module covers something I have never seen in a course or a textbook. We have been doing this in Excel. Seeing it formalised properly changed how I think about rate reviews."</p>
-        <div class="proof-card-author">Head of pricing</div>
-        <div class="proof-card-role">UK personal lines insurer - early reader</div>
+      <div class="proof-stat">
+        <div class="proof-stat-number">15</div>
+        <div class="proof-stat-label">practitioner articles</div>
       </div>
     </div>
+
+    <p class="proof-body">Every library in this course is publicly available on GitHub and PyPI. The notebooks are runnable end-to-end on Databricks. The tests assert actuarial properties - not just that code runs, but that outputs are consistent with classical actuarial methods. That is the standard we hold ourselves to and you can verify it.</p>
 
     <div class="proof-libs">
       <div class="proof-libs-title">The course teaches you to use these open-source libraries. We built all of them.</div>

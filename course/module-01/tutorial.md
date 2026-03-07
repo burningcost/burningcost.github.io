@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Module 1: Databricks for Pricing Teams"
+---
+
 # Module 1: Databricks for Pricing Teams
 
 **Modern Insurance Pricing with Python and Databricks**

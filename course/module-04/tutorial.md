@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Module 4: SHAP Relativities"
+---
+
 # SHAP Relativities - From GBM to Rating Factor Tables
 
 ---

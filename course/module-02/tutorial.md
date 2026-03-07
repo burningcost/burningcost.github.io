@@ -1,3 +1,8 @@
+---
+layout: default
+title: "Module 2: GLMs in Python - The Bridge from Emblem"
+---
+
 # GLMs in Python - The Bridge from Emblem
 
 ---

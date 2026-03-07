@@ -302,7 +302,7 @@ The actuarial profession's honest answer to causal questions has always been: "W
 
 DML does not prove causation. It estimates causal effects under the assumption that all relevant confounders are observed, with a valid confidence interval on the estimate, and a sensitivity analysis that characterises how robust the conclusion is to violations of that assumption. That is substantially more than "educated judgment" and substantially better than a GLM correlation.
 
-The academic literature on causal inference in insurance is thin. A 2023 survey (arXiv:2307.16427) reviewed 45 papers across banking, finance, and insurance and concluded "the application remains in its infancy." The methodological tooling is now mature, the regulatory context is creating demand, and teams that can quantify confounding bias will make better pricing decisions than those that cannot. The gap between method and industry practice is the commercial opportunity.
+The academic literature on causal inference in insurance is thin. A 2023 survey (arXiv:2307.16427) reviewed 37 papers across banking, finance, and insurance and concluded "the application remains in its infancy." The methodological tooling is now mature, the regulatory context is creating demand, and teams that can quantify confounding bias will make better pricing decisions than those that cannot. The gap between method and industry practice is the commercial opportunity.
 
 We built `insurance-causal` because the tools existed (DoubleML, CatBoost) but the insurance-specific interface did not. The confounding bias report - one method call, a table showing naive GLM coefficient vs DML causal estimate vs implied bias - is the output that makes this immediately actionable for a pricing team.
 

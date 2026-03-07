@@ -9,7 +9,7 @@ published: false
 
 Your motor frequency GLM has 12 rating factors. That means 66 possible pairwise interactions. You have tested, at most, a handful. The ones that felt obvious to whoever built the model five years ago, or the ones that showed up in a 2D actual-to-expected plot during a rate review, or the ones suggested by a GBM someone ran in a notebook and never fully documented.
 
-Most interactions in a UK personal lines GLM are chosen by intuition. That is a bad way to choose them - not because actuaries have bad intuitions, but because the search space is too large for intuition to be systematic, the signal is buried under correlation structure, and "this pair felt worth testing" is not an auditable process.
+Many interactions in a UK personal lines GLM are chosen by intuition or heuristic search. That is an imperfect way to choose them - not because actuaries have bad intuitions, but because the search space is too large for intuition to be systematic, the signal is buried under correlation structure, and "this pair felt worth testing" is not an auditable process.
 
 There are 66 pairs for a 12-factor model. For a 20-factor model there are 190. Testing each one properly - fitting the GLM, computing the likelihood-ratio statistic, checking a 2D A/E plot, deciding whether the parameter count is worth the deviance gain - takes the better part of a day per pair if you do it carefully. You will not test all of them. You will miss interactions that are in the data.
 
@@ -204,7 +204,7 @@ Filter on `consensus_rank` when you want pairs that both methods flagged. Filter
 
 ## The regulatory framing
 
-UK actuaries working under PRA SS1/23 model risk governance and FCA Consumer Duty pricing rules need interaction decisions to be auditable. A rate table with interactions added on the basis of intuition is harder to defend in a model review than one where the shortlist came from an automated detection procedure, each candidate was tested with a likelihood-ratio statistic, and the final decisions are documented alongside the test results.
+UK actuaries working under FCA Consumer Duty pricing rules and internal model risk governance frameworks need interaction decisions to be auditable. A rate table with interactions added on the basis of intuition is harder to defend in a model review than one where the shortlist came from an automated detection procedure, each candidate was tested with a likelihood-ratio statistic, and the final decisions are documented alongside the test results.
 
 This library is designed to support that process. It produces a ranked table with test statistics, Bonferroni-corrected significance, parameter costs, and deviance gains. The actuary decides which interactions to add. The library provides the shortlist and the evidence.
 

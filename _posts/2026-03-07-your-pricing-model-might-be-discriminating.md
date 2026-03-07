@@ -13,7 +13,7 @@ But postcode also correlates with ethnicity. In London, in particular, postcode 
 
 This is proxy discrimination. It is the subject of Equality Act 2010 Section 19. And as of July 2023, it is directly in scope of FCA Consumer Duty, specifically PRIN 2A.4, which requires firms to monitor whether their products provide fair value across groups defined by protected characteristics.
 
-The FCA is not being subtle about this. In TR24/2 (August 2024), they told insurers directly that most fair value assessments lacked the granularity to detect whether specific customer groups received poor value. The next step is enforcement.
+The FCA has signalled this is a priority area. In TR24/2 (August 2024), they found that fair value assessments from reviewed firms were too high level and lacked the granularity to adequately evidence good outcomes across customer groups. The next step is enforcement.
 
 We built [`insurance-fairness`](https://github.com/burningcost/insurance-fairness) to give pricing teams an audit-ready answer to this problem. This post explains the regulatory exposure, the technical problem of proxy discrimination in insurance models, and how to use the library to measure and mitigate it.
 
@@ -298,7 +298,7 @@ Our recommended sequence:
 
 **3. Compute the DF prices and decompose.** Understand what proportion of the disparity is risk-based versus proxy-discrimination. If the proxy component is small, document that and file it. If the proxy component is large, you have a pricing problem that the DF prices fix, and you should consider applying them.
 
-**4. Document everything.** The FCA in TR24/2 was explicit: they want audit trails. "We looked and found it was fine" is not adequate. "We ran these specific tests, found these specific results, and took these specific actions" is.
+**4. Document everything.** The FCA in TR24/2 was explicit: they want adequate granularity and evidence of good outcomes. "We looked and found it was fine" is not adequate. "We ran these specific tests, found these specific results, and took these specific actions" is.
 
 **5. Brief the Chief Actuary and your Consumer Duty owner.** This is not a modelling curiosity. It is a regulated obligation with enforcement behind it. The right people need to be informed of the findings.
 

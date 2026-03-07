@@ -7,9 +7,9 @@ tags: [demand, elasticity, DML, conversion, retention, survival, FCA, GIPP, pric
 description: "How to build a demand model for UK personal lines pricing: conversion, retention, price elasticity, and demand curves. Covers FCA GIPP requirements and the tools that make it tractable."
 ---
 
-Every UK personal lines pricing team we know has a technical premium model. Most of them have a good one. Almost none of them have a demand model.
+Every UK personal lines pricing team we know has a technical premium model. Most of them have a good one. Few of them have a demand model.
 
-The technical premium tells you what a risk costs. It does not tell you whether the customer will accept the price you set for that risk. On a price comparison website, the gap between your technical premium and the price you quote is not a free variable - it is a commercial decision with a predictable volume consequence, and most teams are making it without quantifying that consequence.
+The technical premium tells you what a risk costs. It does not tell you whether the customer will accept the price you set for that risk. On a price comparison website, the gap between your technical premium and the price you quote is not a free variable - it is a commercial decision with a predictable volume consequence, and many teams are making it without quantifying that consequence.
 
 The result is pricing decisions that leave money on the table in both directions. Overpriced risks convert at rates lower than they should. Underpriced risks convert well but generate inadequate margins. Without a demand model, you cannot tell which situation you are in, or by how much.
 
@@ -25,7 +25,7 @@ The demand problem in insurance splits cleanly into two questions:
 
 **Retention modelling**: Given a renewal invitation we have sent to an existing customer, what is the probability they stay? This is a function of the renewal price, the price change from last year, tenure, payment method, and claim history.
 
-These look superficially similar but they are not the same problem. New business conversion is driven primarily by relative price - on a PCW, rank position matters more than absolute price, and being second rather than first can cost 20-30% of your conversion rate for that risk. Renewal is driven primarily by price change and customer inertia. A customer who has been with you for six years and pays by direct debit is not evaluating you the same way a new PCW visitor is.
+These look superficially similar but they are not the same problem. New business conversion is driven primarily by relative price - on a PCW, rank position matters more than absolute price, and being second rather than first can significantly reduce your conversion rate for that risk. Renewal is driven primarily by price change and customer inertia. A customer who has been with you for six years and pays by direct debit is not evaluating you the same way a new PCW visitor is.
 
 The library handles both with separate classes. Use `ConversionModel` for new business and `RetentionModel` for renewals. They share an interface but have different underlying logic.
 
@@ -82,7 +82,7 @@ model = ConversionModel(
 )
 ```
 
-In 2024, 63% of UK motor insurance switchers used a PCW. If your conversion data is primarily PCW data, a model without rank position is misspecified. Rank is not a continuous substitute for price - being first rather than second is a step change in visibility that a smooth logistic curve on price alone cannot capture.
+In 2024, 63% of UK motor insurance switchers used a PCW. If your conversion data is primarily PCW data, a model without rank position is misspecified. Rank is not a continuous substitute for price - visibility effects at the top of results pages are difficult to capture with a smooth logistic curve on price alone.
 
 ---
 
@@ -288,9 +288,9 @@ print(violations.select(["policy_id", "channel", "renewal_price",
                           "nb_price", "excess"]))
 ```
 
-The ENBP constraint binds by channel. A customer who originally came via Confused.com has an ENBP calculated from your Confused.com new business price for that risk, not your direct price. If you quote differently across channels - and most UK insurers do - the ENBP calculation must be channel-specific.
+The ENBP constraint binds by channel. A customer who originally came via Confused.com has an ENBP calculated from your Confused.com new business price for that risk, not your direct price. UK insurers who quote differently across channels - which is common practice - must compute ENBP on a channel-specific basis.
 
-The FCA's MS18/1 market study found that the average motor customer with 5+ years' tenure was paying 85% more than equivalent new customers in 2018. The ENBP rule made that illegal. The demand modelling that was used to identify and exploit inelastic customers is now only useful for the opposite purpose: identifying customers who need a retention discount before they lapse.
+The FCA's MS18/1 market study found that motor insurance customers with 5+ years' tenure were paying on average around 85% more than equivalent new customers in 2018. The ENBP rule made that illegal. The demand modelling that was used to identify and exploit inelastic customers is now only useful for the opposite purpose: identifying customers who need a retention discount before they lapse.
 
 ---
 
@@ -325,6 +325,6 @@ Source and issue tracker on [GitHub](https://github.com/burningcost/insurance-de
 
 The minimum viable starting point: fit a `ConversionModel` on your quote data and run `model.predict_proba()` on your current book. Plot predicted conversion against the actual bind rate by price decile. If they match, your GLM is adequate. If they diverge above the 7th or 8th decile, you have a non-linearity that a logistic GLM is not capturing and CatBoost will.
 
-After that: run `ElasticityEstimator` on a year of PCW quote data. Compare the DML estimate with `ConversionModel.marginal_effect()`. If they are materially different - and they usually are - the difference is the confounding bias you have been pricing with. That number, concretely, is how wrong your current pricing assumption is.
+After that: run `ElasticityEstimator` on a year of PCW quote data. Compare the DML estimate with `ConversionModel.marginal_effect()`. If they are materially different - and they often are - the difference is the confounding bias you have been pricing with. That number, concretely, is how wrong your current pricing assumption is.
 
-The libraries that commercial platforms sell for £100k+/year are doing the same maths. The methodology is not proprietary. What they sell is the integration, the UI, and the professional services. `insurance-demand` is the methodology in an auditable Python package with no vendor lock-in and an API that reads like sklearn.
+The libraries that commercial platforms sell for significant annual fees are doing the same maths. The methodology is not proprietary. What they sell is the integration, the UI, and the professional services. `insurance-demand` is the methodology in an auditable Python package with no vendor lock-in and an API that reads like sklearn.

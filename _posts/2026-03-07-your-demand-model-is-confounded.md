@@ -9,7 +9,7 @@ description: "Naive price elasticity estimates from insurance quote data are bia
 
 Your renewal pricing model has a price elasticity coefficient. Your team uses it. It is wrong.
 
-Not wrong as in: someone made an arithmetic error. Wrong as in: the quantity it estimates is not the quantity you need for sound pricing decisions. It measures the association between price change and lapse, and it embeds a confound that naive regression cannot remove. In a typical UK motor book, this confound overstates true price sensitivity by 30-100%. A renewal optimiser built on an overstated elasticity gives back margin to customers who would have renewed anyway.
+Not wrong as in: someone made an arithmetic error. Wrong as in: the quantity it estimates is not the quantity you need for sound pricing decisions. It measures the association between price change and lapse, and it embeds a confound that naive regression cannot remove. In observational insurance data, this confound can materially overstate true price sensitivity. A renewal optimiser built on an overstated elasticity gives back margin to customers who would have renewed anyway.
 
 We built [`insurance-demand`](https://github.com/burningcost/insurance-demand) to fix this. This post explains the problem in detail and shows how the library addresses it.
 
@@ -35,9 +35,7 @@ The same structure appears in conversion modelling. PCW business is the clearest
 
 A renewal optimiser built on an overstated elasticity will systematically give back too much margin.
 
-Take a concrete example. Suppose the true causal elasticity is -0.023: a 1 percentage-point premium increase causes a 2.3 percentage-point reduction in renewal probability. Your naive GLM estimate is -0.047, which is consistent with the published finding from Guelman and Guillén (2014) that propensity-score-adjusted elasticities are roughly half the naive estimates.
-
-The optimiser maximises (price - cost) x P(renewal). If it thinks P(renewal) falls twice as fast with price as it actually does, it will undercut more aggressively than it should. On a renewal book of 200,000 policies, using the wrong elasticity can represent millions of pounds in unnecessary margin concession annually.
+Take a concrete example. Suppose the true causal elasticity is -0.023: a 1 percentage-point premium increase causes a 2.3 percentage-point reduction in renewal probability. Your naive GLM estimate is -0.047. Guelman and Guillén (2014) demonstrated this type of confounding using propensity score methods on automobile insurance renewal data, finding that the causal estimate was substantially lower in absolute magnitude than the naive association. If the optimiser thinks P(renewal) falls twice as fast with price as it actually does, it will undercut more aggressively than it should. On a renewal book of 200,000 policies, using the wrong elasticity can represent millions of pounds in unnecessary margin concession annually.
 
 Post-PS21/11, this matters even more. The FCA's GIPP remedies (PS21/11, effective January 2022) banned price-walking: you cannot charge renewing customers more than the equivalent new business price through the same channel. The direction of the optimisation is now one-sided. You can discount but you cannot surcharge. Every percentage point of discount you apply unnecessarily is pure margin loss with no regulatory upside.
 
@@ -100,7 +98,7 @@ probs = model.predict_proba(df.filter(pl.col("quote_date") >= "2025-01-01"))
 
 The `price_transform="log_ratio"` option is not optional in practice. A quoted price of £800 means different things for a risk with a technical premium of £700 versus one of £400. The ratio removes this ambiguity. The model is estimating how conversion responds to pricing above or below technical, which is the commercial decision you are actually making.
 
-If you have aggregator data - competitor prices from Consumer Intelligence or eBenchmarkers - include `rank_position` and `price_ratio_to_cheapest`. In 2024, 63% of UK motor insurance switchers used a PCW. On a PCW, being second rather than first cheapest costs 20-30% of your conversion rate for a given risk, and no smooth function of absolute price captures that discontinuity. A conversion model without rank position is misspecified for PCW business.
+If you have aggregator data - competitor prices from Consumer Intelligence or eBenchmarkers - include `rank_position` and `price_ratio_to_cheapest`. In 2024, 63% of UK motor insurance switchers used a PCW. On a PCW, being near the top of results matters significantly for conversion, and no smooth function of absolute price captures that visibility effect. A conversion model without rank position is misspecified for PCW business.
 
 ### Retention modelling
 
@@ -173,7 +171,7 @@ Price Elasticity (DML)
 
 A 10% increase in the price-to-technical-premium ratio reduces conversion probability by approximately 3.1 percentage points at the average conversion rate, with a confidence interval of (-3.5pp, -2.7pp). This is precise enough to use in an optimiser.
 
-Compare this with `model.marginal_effect()` from the ConversionModel. If the DML estimate and the naive estimate are within 10% of each other, confounding is not material for your portfolio and your GLM was giving you adequate guidance. If they diverge - and they usually do on PCW conversion data by at least 30-40% - you have been pricing with a biased elasticity.
+Compare this with `model.marginal_effect()` from the ConversionModel. If the DML estimate and the naive estimate are within 10% of each other, confounding is not material for your portfolio and your GLM was giving you adequate guidance. If they diverge materially - which is common on PCW conversion data - you have been pricing with a biased elasticity.
 
 For segment-level elasticity, set `heterogeneous=True`. This uses CausalForestDML from Microsoft Research's `econml` library under the hood:
 
@@ -302,8 +300,8 @@ uv add "insurance-demand[dml,survival]"
 
 The recommended starting point is the confounding bias check. Fit a `ConversionModel` on a year of PCW quote data, compute `model.marginal_effect()`, then run `ElasticityEstimator` on the same data and compare `est.summary()` against the naive marginal effect. The difference is the confounding bias in your current elasticity assumption.
 
-On most UK motor PCW datasets, the DML estimate is materially lower in absolute magnitude than the naive estimate. The naive estimate includes risk-driven demand variation; the DML estimate strips it out. If your renewal pricing strategy was built on the naive number, you have been discounting more than you needed to.
+On motor PCW datasets, the DML estimate is commonly lower in absolute magnitude than the naive estimate. The naive estimate includes risk-driven demand variation; the DML estimate strips it out. If your renewal pricing strategy was built on the naive number, you may have been discounting more than necessary.
 
-The commercial platforms - Akur8, Earnix, Radar - implement versions of this methodology in their demand modules, at prices starting around £100k per year and behind proprietary API surfaces. The methodology is not proprietary. The `insurance-demand` library is the same maths in an auditable Python package with no vendor lock-in, a clean sklearn-compatible API, and a data structure that your existing Polars and CatBoost workflow already understands.
+Commercial platforms - Akur8, Earnix, Radar - implement versions of this methodology in their demand modules. The methodology is not proprietary. The `insurance-demand` library is the same maths in an auditable Python package with no vendor lock-in, a clean sklearn-compatible API, and a data structure that your existing Polars and CatBoost workflow already understands.
 
 Source and issue tracker on [GitHub](https://github.com/burningcost/insurance-demand).

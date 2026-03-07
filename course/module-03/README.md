@@ -52,7 +52,7 @@ We use CatBoost throughout. We use `insurance-cv` for cross-validation. We track
 
 ## Key technical decisions
 
-**CatBoost, not LightGBM or XGBoost.** CatBoost handles categorical features without ordinal encoding. Its ordered boosting algorithm is specifically designed to reduce overfitting on smaller datasets - relevant because most UK personal lines books have 50,000-500,000 policies, not ten million. Its symmetric tree structure also makes SHAP value computation faster than alternatives, which matters in Module 4. The practical reason we picked it: CatBoost's native `cat_features` parameter means we pass the column names and the library handles everything, rather than preprocessing with label encoders that need to be versioned alongside the model.
+**Why CatBoost.** CatBoost handles categorical features without ordinal encoding. Its ordered boosting algorithm is specifically designed to reduce overfitting on smaller datasets - relevant because most UK personal lines books have 50,000-500,000 policies, not ten million. Its symmetric tree structure also makes SHAP value computation faster than alternatives, which matters in Module 4. The practical reason we picked it: CatBoost's native `cat_features` parameter means we pass the column names and the library handles everything, rather than preprocessing with label encoders that need to be versioned alongside the model.
 
 **Polars for data manipulation.** All DataFrame operations use Polars. We convert to a CatBoost `Pool` at training time; the Pool accepts numpy arrays and lists, so the conversion is a one-liner. Pandas does not appear.
 

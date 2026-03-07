@@ -1,6 +1,6 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Module 4: SHAP Relativities — From GBM to Rating Factor Tables
+# MAGIC # Module 4: SHAP Relativities - From GBM to Rating Factor Tables
 # MAGIC
 # MAGIC Full workflow on synthetic UK motor data. Runs end-to-end on a single-node
 # MAGIC Databricks cluster (DBR 14.x, ML runtime recommended).
@@ -25,7 +25,7 @@
 
 # COMMAND ----------
 
-# Restart the Python interpreter after pip install so imports work cleanly
+# Restart the Python interpreter after installation so imports work cleanly
 dbutils.library.restartPython()
 
 # COMMAND ----------
@@ -104,7 +104,7 @@ df = df.with_columns([
     pl.col("annual_mileage").log().alias("log_mileage"),
 ])
 
-# Age bands for the banded analysis (Step 7) — stored for grouping later
+# Age bands for the banded analysis (Step 7) - stored for grouping later
 age_bins = [17, 22, 25, 30, 40, 55, 70, 86]
 age_labels = ["17-21", "22-24", "25-29", "30-39", "40-54", "55-69", "70+"]
 
@@ -130,15 +130,15 @@ print(
 # MAGIC
 # MAGIC CatBoost advantages for this workflow:
 # MAGIC - **Native categoricals**: `area` is passed as a string. No ordinal encoding.
-# MAGIC - **Native SHAP**: `get_feature_importance(type='ShapValues')` — no external shap library call needed.
+# MAGIC - **Native SHAP**: `get_feature_importance(type='ShapValues')` - no external shap library call needed.
 # MAGIC - **Exposure offset**: use `baseline=log(exposure)` in the Pool. Do NOT also set
-# MAGIC   `weight=exposure` — that would double-count exposure. Choose one approach.
+# MAGIC   `weight=exposure` - that would double-count exposure. Choose one approach.
 
 # COMMAND ----------
 
 # Frequency features
 freq_features = [
-    "area",           # string categorical — declared in cat_features below
+    "area",           # string categorical - declared in cat_features below
     "ncd_years",
     "has_convictions",
     "vehicle_group",
@@ -158,7 +158,7 @@ log_exposure = np.log(exposure_pd.clip(lower=1e-6))
 train_pool = cb.Pool(
     data=X_freq_pd,
     label=y_freq_pd,
-    baseline=log_exposure,     # exposure offset — correct approach, no weight=exposure
+    baseline=log_exposure,     # exposure offset - correct approach, no weight=exposure
     cat_features=["area"],
 )
 
@@ -191,7 +191,7 @@ print("(In-sample rates match because Poisson mean is preserved)")
 # MAGIC
 # MAGIC Severity model notes:
 # MAGIC - Trained on claim records only (policies with claim_count > 0)
-# MAGIC - Weighted by claim count — policies with multiple claims contribute proportionally
+# MAGIC - Weighted by claim count - policies with multiple claims contribute proportionally
 # MAGIC - Consider truncating large losses at a threshold before fitting to avoid
 # MAGIC   individual large claims dominating the SHAP attribution for unrelated features
 
@@ -416,13 +416,13 @@ plt.close(fig)
 # MAGIC was trained on), then aggregate the continuous `driver_age` SHAP values by band
 # MAGIC using exposure-weighted means.
 # MAGIC
-# MAGIC Do NOT pass `age_band` as a feature to the explainer — the model was trained on
+# MAGIC Do NOT pass `age_band` as a feature to the explainer - the model was trained on
 # MAGIC `driver_age` and TreeSHAP needs the same feature matrix.
 
 # COMMAND ----------
 
 # sr_freq was fit on the original features including continuous driver_age.
-# We already have the SHAP values — no need to refit.
+# We already have the SHAP values - no need to refit.
 shap_vals = sr_freq.shap_values()          # numpy array, shape (n_obs, n_features)
 feature_names = sr_freq.feature_names_    # list of feature names in SHAP order
 
@@ -654,7 +654,7 @@ def to_radar_format(
     Parameters
     ----------
     rels : pd.DataFrame
-        Output from extract_relativities(). Categorical features only —
+        Output from extract_relativities(). Categorical features only -
         Radar cannot directly import continuous curves.
     feature_name_map : dict | None
         Mapping from Python column names to Radar variable names.
@@ -747,7 +747,7 @@ print(f"Written {len(all_rels)} relativity rows to main.pricing.module04_shap_re
 
 # COMMAND ----------
 
-# Write age band relativities from Polars — convert to Spark via pandas bridge
+# Write age band relativities from Polars - convert to Spark via pandas bridge
 age_rels_pd = band_rels_sorted.select([
     "age_band", "relativity", "lower_ci", "upper_ci", "n_obs", "total_exposure"
 ]).to_pandas()
@@ -800,7 +800,7 @@ print(f"Written {len(val_records)} validation records to main.pricing.module04_v
 
 # COMMAND ----------
 
-# Store SHAP values as a Delta table — more queryable than a JSON blob.
+# Store SHAP values as a Delta table - more queryable than a JSON blob.
 # This lets you re-band, re-normalise, or re-validate without refitting.
 shap_vals_freq = sr_freq.shap_values()  # numpy array, shape (n_obs, n_features)
 
@@ -831,7 +831,7 @@ print(f"Written {len(shap_df):,} rows of SHAP values to main.pricing.module04_sh
 # COMMAND ----------
 
 print("=" * 60)
-print("SHAP RELATIVITY EXTRACTION — SUMMARY")
+print("SHAP RELATIVITY EXTRACTION - SUMMARY")
 print("=" * 60)
 print()
 print(f"Portfolio: {df.height:,} policies, {df['exposure'].sum():.0f} earned years")

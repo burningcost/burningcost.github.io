@@ -4,6 +4,7 @@ title: "Your Pricing Model Might Be Discriminating"
 date: 2026-03-07
 categories: [techniques, compliance]
 tags: [fairness, proxy-discrimination, FCA, Consumer-Duty, Equality-Act, LRTW, GBM, postcode, python, motor, insurance-fairness]
+description: "How to detect and correct proxy discrimination in UK insurance pricing models. Using SHAP and the insurance-fairness library to identify protected characteristic leakage under FCA Consumer Duty."
 ---
 
 Your GBM uses postcode as a feature. That is completely standard practice in UK motor insurance. Postcode predicts claim frequency. The model validation looks fine.

@@ -4,6 +4,7 @@ title: "From GBM to Radar: A Complete Databricks Workflow for Pricing Actuaries"
 date: 2026-03-06
 categories: [tutorials]
 tags: [databricks, catboost, shap, radar, pricing, motor, unity-catalog, mlflow, python]
+description: "A complete Databricks workflow for UK pricing actuaries: CatBoost training with MLflow tracking, SHAP relativities extraction, and export to Radar. End-to-end motor pricing in Python."
 ---
 
 Most UK pricing teams we speak to are running Databricks. Almost none of them are running it well.

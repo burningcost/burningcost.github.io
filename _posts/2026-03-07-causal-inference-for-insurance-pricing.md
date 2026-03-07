@@ -4,6 +4,7 @@ title: "How Much of Your GLM Coefficient Is Actually Causal?"
 date: 2026-03-07
 categories: [techniques]
 tags: [causal-inference, double-machine-learning, DML, catboost, pricing, FCA, python, motor]
+description: "GLM coefficients measure association, not causation. How Double Machine Learning isolates the causal effect of rating factors from confounding, and why this matters for FCA-compliant pricing."
 ---
 
 Your GLM has a price elasticity coefficient of -0.045. Your pricing team uses it to optimise renewal offers. Your renewal optimisation is wrong.

@@ -4,6 +4,7 @@ title: "Your Rating Factor Might Be Confounded"
 date: 2026-03-07
 categories: [techniques]
 tags: [causal-inference, double-machine-learning, DML, confounding, pricing, python, motor, elasticity]
+description: "When exp(beta) from a GLM is not what you think it is. How omitted variable bias and confounding distort rating factor estimates, and how Double Machine Learning produces cleaner causal estimates."
 ---
 
 When a pricing actuary adds a factor to a GLM and reads off `exp(β)`, what they get is the association between that factor and loss cost, holding other factors constant. That sounds like a causal estimate. It is not.

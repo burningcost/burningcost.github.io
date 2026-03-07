@@ -4,6 +4,7 @@ title: "Extracting Rating Relativities from GBMs with SHAP"
 date: 2026-03-05
 categories: [techniques]
 tags: [shap, gbm, catboost, relativities, pricing, python]
+description: "How to extract multiplicative rating relativities from CatBoost GBMs using SHAP values - the same format as exp(beta) from a GLM, with confidence intervals, exposure weighting, and prediction reconstruction checks."
 ---
 
 Every UK pricing team we've spoken to is in some version of the same situation: a GBM sitting on a server somewhere outperforming the production GLM, but nobody can get the relativities out of it. The regulator wants a factor table. Radar needs an import file. The head of pricing wants to challenge the model in terms they recognise.

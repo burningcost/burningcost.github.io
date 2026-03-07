@@ -234,7 +234,7 @@ freq_model = cb.CatBoostRegressor(**freq_params)
 freq_model.fit(train_pool)
 ```
 
-One note on the exposure offset: `baseline` in CatBoost's Pool sets the initial prediction on the raw (log) scale, equivalent to `init_score` in LightGBM. With Poisson loss and log link, `baseline=log(exposure)` tells the model to start with the log-rate equal to log-exposure and learn the frequency contribution from there. This means the model's leaf outputs are log-rates net of exposure, and so are the SHAP values. The `SHAPRelativities` class handles this correctly when `annualise_exposure=True` (the default).
+One note on the exposure offset: `baseline` in CatBoost's Pool sets the initial prediction on the raw (log) scale, the initial prediction in the same way other GBM libraries handle log-offsets. With Poisson loss and log link, `baseline=log(exposure)` tells the model to start with the log-rate equal to log-exposure and learn the frequency contribution from there. This means the model's leaf outputs are log-rates net of exposure, and so are the SHAP values. The `SHAPRelativities` class handles this correctly when `annualise_exposure=True` (the default).
 
 ---
 

@@ -50,25 +50,34 @@ Compute PSI on the model score distribution. Then compute CSI - the same PSI for
 The critical modification for insurance: weight by exposure, not policy count. A portfolio where young drivers account for 15% of policies but 30% of earned exposure needs the young driver bin's contribution to PSI weighted by their exposure share, not their headcount. Standard PSI from credit scoring does not do this. Our `insurance-monitoring` library computes exposure-weighted PSI and CSI throughout.
 
 ```python
-from insurance_monitoring import psi, csi
+from insurance_monitoring.drift import psi, csi
+import polars as pl
 
 # Exposure-weighted PSI on model score
 score_psi = psi(
     reference=train_scores,
     current=monitor_scores,
-    weights_reference=train_exposure,
-    weights_current=monitor_exposure,
-    n_bins=10
+    exposure_weights=monitor_exposure,  # current-period exposure
+    n_bins=10,
 )
+# 0.08 -> green; 0.10-0.25 -> amber; >0.25 -> red
 
-# CSI across all rating factors
+# CSI across all continuous rating factors
 feature_drift = csi(
-    reference_df=train_features,
+    reference_df=train_features,    # polars or pandas DataFrame
     current_df=monitor_features,
-    exposure_reference=train_exposure,
-    exposure_current=monitor_exposure
+    features=["driver_age", "vehicle_age", "ncd_years"],
 )
-# Returns a DataFrame: one row per feature, with CSI value and traffic-light status
+# Returns a DataFrame: one row per feature, with csi value and band ('green'/'amber'/'red')
+print(feature_drift)
+# shape: (3, 3)
+# ┌─────────────┬──────────┬───────┐
+# │ feature     ┆ csi      ┆ band  │
+# ╞═════════════╪══════════╪═══════╡
+# │ driver_age  ┆ 0.031    ┆ green │
+# │ vehicle_age ┆ 0.143    ┆ amber │
+# │ ncd_years   ┆ 0.019    ┆ green │
+# └─────────────┴──────────┴───────┘
 ```
 
 Thresholds: PSI/CSI below 0.10 is stable; 0.10-0.25 warrants investigation; above 0.25 requires action. These originate from 1990s credit scoring practice and are not formally calibrated for insurance, but they remain the industry standard.
@@ -84,18 +93,34 @@ The standard alert thresholds from industry practice: A/E outside 0.90-1.10 on a
 One complication that catches teams out: IBNR. Using notified claims as your actuals for recent accident periods systematically understates A/E because claims take 12-18 months to develop. Either restrict your A/E analysis to accident periods that are 12+ months old - which introduces a lag - or apply development factors to project incurred claims to ultimate.
 
 ```python
-from insurance_monitoring import ae_ratio
+from insurance_monitoring.calibration import ae_ratio, ae_ratio_ci
+import numpy as np
 
-# Segmented A/E with development factor adjustment
-ae = ae_ratio(
-    actual_claims=df["claims_ultimate"],  # IBNR-adjusted
-    expected_claims=df["predicted_frequency"] * df["exposure"],
-    segments=["driver_age_band", "vehicle_age", "ncd_years"],
-    development_factors=dev_factors  # chain-ladder table, optional
+# Aggregate A/E with exact Poisson confidence interval
+result = ae_ratio_ci(
+    actual=df["claims_ultimate"].to_numpy(),   # IBNR-adjusted counts
+    predicted=df["predicted_frequency"].to_numpy(),
+    exposure=df["exposure"].to_numpy(),        # earned car-years
 )
+print(f"A/E = {result['ae']:.3f}  95% CI [{result['lower']:.3f}, {result['upper']:.3f}]")
+# A/E = 1.087  95% CI [1.041, 1.136]
 
-print(ae.summary())
-# Returns overall A/E and by-segment breakdown with confidence intervals
+# Segmented A/E by driver age band
+ae_by_age = ae_ratio(
+    actual=df["claims_ultimate"].to_numpy(),
+    predicted=df["predicted_frequency"].to_numpy(),
+    exposure=df["exposure"].to_numpy(),
+    segments=df["driver_age_band"].to_numpy(),
+)
+print(ae_by_age)
+# ┌──────────┬─────────┬──────────┬──────────┬────────────┐
+# │ segment  ┆ actual  ┆ expected ┆ ae_ratio ┆ n_policies │
+# ╞══════════╪═════════╪══════════╪══════════╪════════════╡
+# │ 17-25    ┆ 312.0   ┆ 269.4    ┆ 1.158    ┆ 2891       │
+# │ 26-50    ┆ 1847.0  ┆ 1761.2   ┆ 1.049    ┆ 18420      │
+# │ 51-70    ┆ 891.0   ┆ 874.5    ┆ 1.019    ┆ 9103       │
+# │ 71+      ┆ 198.0   ┆ 197.3    ┆ 1.004    ┆ 1986       │
+# └──────────┴─────────┴──────────┴──────────┴────────────┘
 ```
 
 ### Layer 3: Discrimination (Gini over time, with a statistical test)
@@ -107,18 +132,29 @@ The Gini coefficient - equivalent to 2 * (AUROC - 0.5) for binary outcomes - mea
 The key advance in arXiv 2510.04556 (December 2025) is providing an asymptotic normality result for the insurance Gini that enables formal hypothesis testing. Under the null that Gini has not changed, `sqrt(n) * (G_new - G_old) / sigma` is asymptotically standard normal. This gives you a z-statistic and p-value rather than a subjective judgement about whether the Gini has "changed enough".
 
 ```python
-from insurance_monitoring import gini_coefficient
+from insurance_monitoring.discrimination import gini_coefficient, gini_drift_test
 
-result = gini_coefficient(
-    y_true=df["claims_occurred"],
-    y_pred=df["predicted_frequency"],
-    exposure=df["exposure"],
-    baseline_gini=0.42,    # from training evaluation
-    baseline_n=125000       # training sample size
+# Current Gini
+g_current = gini_coefficient(
+    actual=current_df["claims_occurred"].to_numpy(),
+    predicted=current_df["predicted_frequency"].to_numpy(),
+    exposure=current_df["exposure"].to_numpy(),
 )
 
-print(f"Current Gini: {result.gini:.3f}")
-print(f"z-statistic: {result.z_stat:.2f}, p-value: {result.p_value:.3f}")
+# Drift test against training baseline
+result = gini_drift_test(
+    reference_gini=0.42,         # stored from training evaluation
+    current_gini=g_current,
+    n_reference=125_000,         # training sample size
+    n_current=len(current_df),
+    reference_actual=train_df["claims_occurred"].to_numpy(),
+    reference_predicted=train_df["predicted_frequency"].to_numpy(),
+    current_actual=current_df["claims_occurred"].to_numpy(),
+    current_predicted=current_df["predicted_frequency"].to_numpy(),
+)
+
+print(f"Current Gini: {result['current_gini']:.3f}")
+print(f"z-statistic: {result['z_statistic']:.2f}, p-value: {result['p_value']:.3f}")
 # Current Gini: 0.389
 # z-statistic: -2.14, p-value: 0.032
 ```
@@ -126,6 +162,46 @@ print(f"z-statistic: {result.z_stat:.2f}, p-value: {result.p_value:.3f}")
 A p-value of 0.032 means you can reject the null that your model's discrimination is unchanged. That is a refit signal, not a recalibration signal.
 
 From the paper's application to the FreMTPL2freq dataset with controlled drift: shifting 200 claims between age groups generated z = -2.38, p = 0.017. Shifting 100 claims: z = -1.28, p = 0.201. The test requires economically meaningful drift to trigger, which is the right property for a test that may generate expensive operational responses.
+
+---
+
+## Running everything at once
+
+For routine monitoring you do not want to orchestrate PSI, A/E and Gini separately. `MonitoringReport` runs the full three-layer check in one call and returns a traffic-light summary with a recommendation:
+
+```python
+from insurance_monitoring import MonitoringReport
+import polars as pl
+
+report = MonitoringReport(
+    reference_actual=train_claims,
+    reference_predicted=train_predicted,
+    current_actual=current_claims,
+    current_predicted=current_predicted,
+    exposure=current_exposure,
+    reference_exposure=train_exposure,
+    feature_df_reference=train_features,
+    feature_df_current=current_features,
+    features=["driver_age", "vehicle_age", "ncd_years"],
+    score_reference=train_scores,
+    score_current=current_scores,
+)
+
+print(report.recommendation)
+# 'RECALIBRATE'  |  'REFIT'  |  'NO_ACTION'  |  'INVESTIGATE'
+
+print(report.to_polars())
+# metric               value    band
+# ae_ratio             1.087    amber
+# gini_current         0.389    red
+# gini_p_value         0.032    red
+# score_psi            0.078    green
+# csi_driver_age       0.031    green
+# csi_vehicle_age      0.143    amber
+# recommendation       NaN      REFIT
+```
+
+The recommendation logic follows the decision tree from arXiv 2510.04556: if the Gini z-test is red, return `REFIT` regardless of A/E. If the A/E is red but Gini is stable, return `RECALIBRATE`. This is not the only valid decision framework, but it is a defensible starting point and you can override the thresholds to match your portfolio and monitoring cadence.
 
 ---
 

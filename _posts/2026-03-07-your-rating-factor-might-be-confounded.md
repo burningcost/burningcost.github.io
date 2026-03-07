@@ -44,7 +44,7 @@ The foundational paper is Chernozhukov, Chetverikov, Demirer, Duflo, Hansen, New
 
 The key procedure is three steps:
 
-**Step 1.** Fit a flexible model (CatBoost, LightGBM, a neural net - anything) to predict Y from X. Subtract: this is the residualised outcome, Ỹ = Y - E[Y|X].
+**Step 1.** Fit a flexible model (we use CatBoost, but any gradient booster or neural net works) to predict Y from X. Subtract: this is the residualised outcome, Ỹ = Y - E[Y|X].
 
 **Step 2.** Fit a separate flexible model to predict D from X. Subtract: residualised treatment, D̃ = D - E[D|X].
 

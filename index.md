@@ -14,7 +14,7 @@ The focus is on the gap between what a GBM can do and what a pricing team can ac
 Extract multiplicative rating relativities from CatBoost models using SHAP values. Same format as `exp(beta)` from a GLM - factor tables, confidence intervals, exposure weighting, reconstruction validation.
 
 ```bash
-uv pip install "shap-relativities[ml]"
+uv add "shap-relativities[ml]"
 ```
 
 ---

@@ -26,9 +26,13 @@ permalink: /course/
   "teaches": "Insurance pricing using Python, Databricks, GLMs, GBMs, SHAP, credibility theory, and constrained rate optimisation",
   "inLanguage": "en-GB",
   "offers": [
-    { "@type": "Offer", "name": "MVP bundle", "price": "295", "priceCurrency": "GBP" },
-    { "@type": "Offer", "name": "Full course", "price": "495", "priceCurrency": "GBP" },
-    { "@type": "Offer", "name": "Individual module", "price": "79", "priceCurrency": "GBP" }
+    {
+      "@type": "Offer",
+      "name": "Full course - all modules + all Burning Cost tools",
+      "price": "295",
+      "priceCurrency": "GBP",
+      "availability": "https://schema.org/PreOrder"
+    }
   ]
 }
 </script>
@@ -43,13 +47,13 @@ permalink: /course/
   </p>
   <p class="hero-detail">8 modules &nbsp;&middot;&nbsp; Databricks notebooks included &nbsp;&middot;&nbsp; Synthetic UK motor data throughout</p>
   <div class="hero-cta">
-    <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-primary btn-lg">Join the waitlist</a>
+    <a href="#waitlist" class="btn btn-primary btn-lg">Join the waitlist</a>
     <a href="#modules" class="btn btn-outline btn-lg">View the modules</a>
   </div>
   <div class="hero-trust">
-    <span class="trust-item"><span class="trust-check"></span>One-time price, no subscription</span>
-    <span class="trust-item"><span class="trust-check"></span>Databricks Free Edition is enough to start</span>
-    <span class="trust-item"><span class="trust-check"></span>Written by UK pricing practitioners</span>
+    <span class="trust-item"><span class="trust-check"></span>One-time payment, no subscription</span>
+    <span class="trust-item"><span class="trust-check"></span>All future updates included</span>
+    <span class="trust-item"><span class="trust-check"></span>Access to all Burning Cost tools</span>
   </div>
 </section>
 
@@ -360,7 +364,7 @@ permalink: /course/
 
     <div class="proof-grid">
       <div class="proof-card">
-        <p>13 open-source libraries, each solving one well-defined pricing problem. Over 600 tests. Every library used in the course was built by us.</p>
+        <p>14 open-source libraries, each solving one well-defined pricing problem. Over 600 tests. Every library used in the course was built by us.</p>
         <div class="proof-card-author">Open source</div>
         <div class="proof-card-role">github.com/burningcost</div>
       </div>
@@ -415,6 +419,12 @@ permalink: /course/
             <div class="proof-lib-desc">Hierarchical Bayesian models for thin segments</div>
           </div>
         </div>
+        <div class="proof-lib-item">
+          <div>
+            <div class="proof-lib-name"><a href="https://github.com/burningcost/insurance-distill" target="_blank">insurance-distill</a></div>
+            <div class="proof-lib-desc">GBM-to-GLM distillation for production</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -425,65 +435,44 @@ permalink: /course/
   <div class="pricing-inner">
     <div class="pricing-header">
       <span class="section-label" style="color:var(--accent)">Pricing</span>
-      <h2 class="section-h2 section-h2-light">One-time price. No subscription. No expiry.</h2>
-      <p>You get the notebook files and the written tutorials. Buy once, keep them.</p>
+      <h2 class="section-h2 section-h2-light">One product. One price. Everything included.</h2>
+      <p>Buy once. Get the full course, every update, and access to all Burning Cost tools as they ship.</p>
     </div>
-    <div class="pricing-grid">
 
-      <div class="pricing-card">
-        <div class="pricing-card-label">Per module</div>
-        <div class="pricing-card-price"><span>&pound;</span>79</div>
-        <div class="pricing-card-sub">Any individual module</div>
-        <ul class="pricing-card-includes">
-          <li>Written tutorial (~4,000 words)</li>
-          <li>Databricks notebook (runnable end-to-end)</li>
-          <li>Synthetic UK motor dataset</li>
-          <li>Free Edition compatible</li>
-        </ul>
-        <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-outline" style="width:100%;text-align:center;display:block;">Join waitlist</a>
-      </div>
-
-      <div class="pricing-card featured">
-        <div class="pricing-card-label">MVP bundle</div>
+    <div class="pricing-single">
+      <div class="pricing-card featured pricing-card-single">
+        <div class="pricing-card-label">Full course + all tools</div>
         <div class="pricing-card-price"><span>&pound;</span>295</div>
-        <div class="pricing-card-sub">Modules 1, 2, 4 &amp; 6 - the core sequence most teams need first</div>
+        <div class="pricing-card-sub">One-time payment &mdash; no subscription, no expiry</div>
         <ul class="pricing-card-includes">
-          <li>Databricks workspace setup (Module 1)</li>
-          <li>GLM bridge from Emblem (Module 2)</li>
-          <li>SHAP relativities for pricing committees (Module 4)</li>
-          <li>Credibility for thin segments (Module 6)</li>
-          <li>All tutorials and notebooks included</li>
-        </ul>
-        <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-primary" style="width:100%;text-align:center;display:block;">Join waitlist</a>
-      </div>
-
-      <div class="pricing-card">
-        <div class="pricing-card-label">Full course</div>
-        <div class="pricing-card-price"><span>&pound;</span>495</div>
-        <div class="pricing-card-sub">All 8 modules when complete</div>
-        <ul class="pricing-card-includes">
-          <li>All 8 modules, including GBMs, conformal intervals, rate optimisation, and the capstone pipeline</li>
-          <li>Immediate access to published modules</li>
+          <li>All 8 modules &mdash; immediate access to published modules</li>
           <li>New modules as they publish, at no extra cost</li>
-          <li>All tutorials and notebooks included</li>
+          <li>All future updates and curriculum additions included</li>
+          <li>Access to every Burning Cost tool and product as it ships</li>
+          <li>Written tutorials (~4,000 words per module)</li>
+          <li>Databricks notebooks, runnable end-to-end</li>
+          <li>Synthetic UK motor dataset throughout</li>
+          <li>Databricks Free Edition compatible</li>
         </ul>
-        <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-outline" style="width:100%;text-align:center;display:block;">Join waitlist</a>
+        <a href="#waitlist" class="btn btn-primary" style="width:100%;text-align:center;display:block;font-size:1.1rem;padding:0.85rem 1.5rem;">Join the waitlist &rarr;</a>
       </div>
-
     </div>
+
     <p class="pricing-cta-note">
-      Payment via <a href="https://polar.sh" target="_blank">Polar.sh</a> is coming shortly.
-      Join the waitlist and we will email you when it is live - waitlist members get first access at the launch price.
+      Payment processing is nearly ready. Join the waitlist and we will email you when it is live &mdash; waitlist members get first access at the launch price.
     </p>
   </div>
 </section>
 
-<!-- WAITLIST BAND -->
-<section class="waitlist-band">
+<!-- WAITLIST -->
+<section class="waitlist-band" id="waitlist">
   <h2>Get notified when it launches</h2>
   <p>Payment processing is nearly ready. Leave your email and we will send you a link the day it goes live. Waitlist members get first access.</p>
   <div class="waitlist-form">
-    <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-primary btn-lg">Email to join the waitlist</a>
+    <form action="https://formspree.io/f/pricing.frontier@gmail.com" method="POST" class="waitlist-formspree">
+      <input type="email" name="email" placeholder="your@email.com" required class="waitlist-input">
+      <button type="submit" class="btn btn-primary btn-lg">Join the waitlist</button>
+    </form>
   </div>
 </section>
 
@@ -525,13 +514,13 @@ permalink: /course/
       </div>
 
       <div class="faq-item">
-        <div class="faq-q">Can I buy modules individually if I only need one?</div>
-        <div class="faq-a">Yes. Each module is standalone at &pound;79. The MVP bundle (Modules 1, 2, 4, 6) at &pound;295 is the recommended starting sequence for most teams. If you only need the rate optimisation module, you can buy just that.</div>
+        <div class="faq-q">What does "access to all Burning Cost tools" mean?</div>
+        <div class="faq-a">As we build new products &mdash; additional tools, dashboards, templates, or workflow utilities &mdash; course purchasers get access as part of the same one-time payment. We are building a suite of things for UK pricing teams. One payment gets you into all of it.</div>
       </div>
 
       <div class="faq-item">
         <div class="faq-q">When will the remaining modules be published?</div>
-        <div class="faq-a">Modules 3, 5, 7, and 8 are in progress. We will publish them as they are ready rather than waiting until the full course is done. If you buy the full course, you get new modules as they publish at no extra charge.</div>
+        <div class="faq-a">Modules 3, 5, 7, and 8 are in progress. We publish them as they are ready rather than waiting until the full course is complete. When you buy, you get immediate access to published modules and new ones as they land.</div>
       </div>
 
       <div class="faq-item">
@@ -546,9 +535,9 @@ permalink: /course/
 <!-- FINAL CTA -->
 <section class="final-cta">
   <h2>Stop spending months adapting the wrong tutorials</h2>
-  <p>Eight modules written specifically for UK personal lines pricing teams. GLMs, GBMs, SHAP relativities, credibility, rate optimisation. The full workflow, done properly.</p>
+  <p>Eight modules written specifically for UK personal lines pricing teams. GLMs, GBMs, SHAP relativities, credibility, rate optimisation. The full workflow, done properly. One price, everything included.</p>
   <div class="final-cta-actions">
-    <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-primary btn-lg">Join the waitlist</a>
+    <a href="#waitlist" class="btn btn-primary btn-lg">Join the waitlist</a>
     <a href="#modules" class="btn btn-outline btn-lg">Review the modules</a>
   </div>
 </section>

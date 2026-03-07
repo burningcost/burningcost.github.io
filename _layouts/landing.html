@@ -1634,6 +1634,27 @@
       .hero-cta { flex-direction: column; align-items: center; }
       .hero-cta .btn { width: 100%; max-width: 280px; justify-content: center; }
     }
+
+    /* ── Single price card (homepage course section) ── */
+
+    .price-cards--single {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .price-card--full {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .price-card-meta {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 0.35rem;
+    }
+
   </style>
 </head>
 <body>
@@ -1647,7 +1668,7 @@
         <li><a href="/course/">Course</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/about/">About</a></li>
-        <li><a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="nav-cta">Join waitlist</a></li>
+        <li><a href="/course/#waitlist" class="nav-cta">Join waitlist</a></li>
       </ul>
     </div>
   </nav>
@@ -1660,7 +1681,7 @@
       <div class="footer-top">
         <div class="footer-tagline-block">
           <div class="footer-brand">Burning<span>Cost</span></div>
-          <p class="footer-tagline"><strong>Built for UK insurance pricing teams.</strong> Thirteen open-source libraries covering the full pricing workflow: from walk-forward cross-validation to constrained rate optimisation. Outputs in formats pricing committees, regulators, and rating engines already understand.</p>
+          <p class="footer-tagline"><strong>Built for UK insurance pricing teams.</strong> Fourteen open-source libraries covering the full pricing workflow: from walk-forward cross-validation to constrained rate optimisation. Outputs in formats pricing committees, regulators, and rating engines already understand.</p>
         </div>
         <div class="footer-newsletter">
           <div class="footer-newsletter-label">Stay current</div>
@@ -1686,7 +1707,7 @@
 
   <!-- Floating waitlist button -->
   <div class="floating-cta" id="floating-cta">
-    <a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks">
+    <a href="/course/#waitlist">
       Join waitlist &rarr;
     </a>
     <div class="floating-cta-dismiss" id="floating-dismiss" title="Dismiss">&#10005;</div>

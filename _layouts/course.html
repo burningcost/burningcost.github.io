@@ -1068,6 +1068,57 @@
       .pricing-card { padding: 1.25rem; }
       .proof-libs-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── Single pricing card ── */
+
+    .pricing-single {
+      display: flex;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .pricing-card-single {
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .pricing-card-single.featured::before {
+      content: 'One-time payment';
+    }
+
+    /* ── Waitlist form ── */
+
+    .waitlist-formspree {
+      display: flex;
+      gap: 0.65rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .waitlist-input {
+      flex: 1 1 260px;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--navy-border2);
+      background: rgba(255,255,255,0.06);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      font-family: var(--sans);
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+      max-width: 320px;
+    }
+
+    .waitlist-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .waitlist-input:focus {
+      border-color: var(--accent);
+      background: rgba(79,126,248,0.06);
+    }
+
   </style>
 </head>
 <body>
@@ -1081,7 +1132,7 @@
         <li><a href="/course/" class="active">Course</a></li>
         <li><a href="/blog/">Blog</a></li>
         <li><a href="/about/">About</a></li>
-        <li><a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-primary nav-cta">Join waitlist</a></li>
+        <li><a href="/course/#waitlist" class="btn btn-primary nav-cta">Join waitlist</a></li>
       </ul>
     </div>
   </nav>

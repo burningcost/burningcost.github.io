@@ -303,7 +303,7 @@ df = pl.read_csv(
 
 ```python
 # Install pyreadstat - restart the Python kernel after installing
-%pip install pyreadstat
+uv pip install pyreadstat
 dbutils.library.restartPython()
 
 import pyreadstat

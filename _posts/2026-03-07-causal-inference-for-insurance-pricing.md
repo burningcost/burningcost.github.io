@@ -96,7 +96,7 @@ print(report)
   pct_price_change  renewal         -0.0450          -0.0230  -0.022     -95.7%
 ```
 
-The plain-English interpretation: the naive estimate overstates the true causal effect substantially (-95.7%). Pricing decisions made using -0.045 are substantially biased.
+The naive estimate overstates the true causal effect by 95.7%. Pricing decisions made using -0.045 are substantially biased.
 
 What this means operationally: the genuine causal elasticity is -0.023, not -0.045. A renewal pricing model optimised on -0.045 will act as if price is twice as powerful a lever as it really is. It will undercut on high-risk segments (thinking that doing so recovers retention that would otherwise be lost to price), when actually those customers' lapse propensity is largely driven by risk characteristics, not price. The optimisation is working on a false premise.
 
@@ -241,7 +241,7 @@ print(report[["gamma", "conclusion_holds", "ci_lower", "ci_upper"]])
 
 The Rosenbaum parameter Γ (gamma) represents the odds ratio of treatment assignment for two units with identical observed confounders. Γ = 1 is no unobserved confounding. Γ = 2 means an unobserved factor doubles the treatment odds for some units relative to comparable units.
 
-If `conclusion_holds` becomes False at Γ = 1.25 - a very mild violation - the result is fragile. If it holds to Γ = 2.0, the result is robust to moderate unobserved confounding. This analysis should be run on every causal estimate before it influences a pricing decision.
+If `conclusion_holds` becomes False at Γ = 1.25 - a very mild violation - the result is fragile. If it holds to Γ = 2.0, the result is robust to moderate unobserved confounding. Run this before any causal estimate influences a pricing decision.
 
 ---
 
@@ -301,7 +301,7 @@ The actuarial profession's honest answer to causal questions has always been: "W
 
 DML does not prove causation. It estimates causal effects under the assumption that all relevant confounders are observed, with a valid confidence interval on the estimate, and a sensitivity analysis that characterises how robust the conclusion is to violations of that assumption. That is substantially more than "educated judgment" and substantially better than a GLM correlation.
 
-The academic literature on causal inference in insurance is thin. A 2023 survey (arXiv:2307.16427) reviewed 45 papers across banking, finance, and insurance and concluded "the application remains in its infancy." That gap is closing - the methodological tooling is mature, the regulatory context is creating demand, and teams that can quantify confounding bias will make better pricing decisions than those that cannot.
+The academic literature on causal inference in insurance is thin. A 2023 survey (arXiv:2307.16427) reviewed 45 papers across banking, finance, and insurance and concluded "the application remains in its infancy." The methodological tooling is now mature, the regulatory context is creating demand, and teams that can quantify confounding bias will make better pricing decisions than those that cannot. The gap between method and industry practice is the commercial opportunity.
 
 We built `insurance-causal` because the tools existed (DoubleML, CatBoost) but the insurance-specific interface did not. The confounding bias report - one method call, a table showing naive GLM coefficient vs DML causal estimate vs implied bias - is the output that makes this immediately actionable for a pricing team.
 

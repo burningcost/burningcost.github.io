@@ -4,6 +4,7 @@ title: "Finding the Interactions Your GLM Missed"
 date: 2026-03-07
 categories: [techniques]
 tags: [GLM, interactions, CANN, NID, shap, catboost, polars, pricing, python, motor]
+published: false
 ---
 
 Your motor frequency GLM has 12 rating factors. That means 66 possible pairwise interactions. You have tested, at most, a handful. The ones that felt obvious to whoever built the model five years ago, or the ones that showed up in a 2D actual-to-expected plot during a rate review, or the ones suggested by a GBM someone ran in a notebook and never fully documented.

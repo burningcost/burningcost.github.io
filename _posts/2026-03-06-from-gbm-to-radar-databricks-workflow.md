@@ -305,7 +305,7 @@ glm = smf.glm(
 glm_rels = np.exp(glm.params).rename("glm_relativity")
 ```
 
-Note that the GLM uses a proper `offset` - log exposure enters the linear predictor correctly, not as a weight. This is one of the genuine model-form differences between the GLM benchmark and the CatBoost model, and it contributes a small but systematic difference in relativities that should be understood rather than glossed over.
+The GLM uses a proper `offset` - log exposure enters the linear predictor correctly, not as a weight. This is one of the genuine model-form differences between the GLM benchmark and the CatBoost model, and it contributes a small but systematic difference in relativities that should be understood rather than glossed over.
 
 The honest observation about what this comparison typically shows: on a mature, well-maintained UK motor book with a GLM that has been tuned over several years, the SHAP relativities agree with the GLM relativities to within 5-10% on most categorical factors. The GBM's advantage is concentrated in the continuous features - driver age curves, mileage curves - and in interactions the GLM never modelled. The area-NCD-age combination that the GLM treated as additive is often genuinely interactive, and the GBM will find it where data supports it.
 

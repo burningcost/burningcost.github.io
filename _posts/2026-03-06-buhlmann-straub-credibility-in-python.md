@@ -97,7 +97,7 @@ s²   =  Σ_i [ w_i · (X̄_i − μ̂)² ]
 
 The term c is a normalising constant that corrects for the fact that groups with different exposures contribute unequally to the between-group sum of squares. It is analogous to the denominator in an ANOVA between-group variance estimate.
 
-Note that â can be negative. This happens when the observed between-group variation is no larger than what pure noise would produce - the portfolio is homogeneous. Convention is to truncate â at zero, which sends K → ∞ and all Z_i → 0. Every group gets the portfolio mean. This is the right answer: if you cannot distinguish groups beyond random noise, don't try.
+â can be negative. This happens when the observed between-group variation is no larger than what pure noise would produce - the portfolio is homogeneous. Convention is to truncate â at zero, which sends K → ∞ and all Z_i → 0. Every group gets the portfolio mean. This is the right answer: if you cannot distinguish groups beyond random noise, don't try.
 
 With v̂ and â in hand:
 

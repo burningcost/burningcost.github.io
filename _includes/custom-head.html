@@ -1,0 +1,224 @@
+<style>
+/* ─── Landing page layout ───────────────────────────────────────────── */
+
+.bc-hero {
+  padding: 2.5rem 0 2rem;
+  border-bottom: 2px solid #e8e8e8;
+  margin-bottom: 2.5rem;
+}
+
+.bc-hero h1 {
+  font-size: 2rem;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+
+.bc-hero p {
+  font-size: 1.1rem;
+  color: #555;
+  max-width: 640px;
+  margin-bottom: 1.25rem;
+}
+
+.bc-cta-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.bc-btn {
+  display: inline-block;
+  padding: 0.55rem 1.2rem;
+  border-radius: 3px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid #333;
+  color: #333;
+  background: transparent;
+  transition: background 0.15s, color 0.15s;
+}
+
+.bc-btn:hover {
+  background: #333;
+  color: #fff;
+  text-decoration: none;
+}
+
+.bc-btn-primary {
+  background: #333;
+  color: #fff;
+}
+
+.bc-btn-primary:hover {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+}
+
+/* ─── Section headings ──────────────────────────────────────────────── */
+
+.bc-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 1.25rem;
+  margin-top: 0;
+  border-bottom: 1px solid #e8e8e8;
+  padding-bottom: 0.5rem;
+}
+
+/* ─── Problem statement ─────────────────────────────────────────────── */
+
+.bc-problem {
+  background: #f8f8f8;
+  border-left: 3px solid #333;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 0.975rem;
+  line-height: 1.65;
+}
+
+.bc-problem p:last-child {
+  margin-bottom: 0;
+}
+
+/* ─── Repo grid ─────────────────────────────────────────────────────── */
+
+.bc-repos {
+  margin-bottom: 2.5rem;
+}
+
+.bc-repo-group {
+  margin-bottom: 2rem;
+}
+
+.bc-repo-group-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 0.6rem;
+}
+
+.bc-repo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 0.75rem;
+}
+
+.bc-repo-item {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.bc-repo-item:hover {
+  border-color: #aaa;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+}
+
+.bc-repo-item a {
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: monospace;
+  text-decoration: none;
+  color: #333;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.bc-repo-item a:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.bc-repo-item p {
+  font-size: 0.825rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* ─── Posts strip ───────────────────────────────────────────────────── */
+
+.bc-posts {
+  margin-bottom: 2.5rem;
+}
+
+.bc-post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bc-post-item {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.bc-post-item:last-child {
+  border-bottom: none;
+}
+
+.bc-post-date {
+  font-size: 0.8rem;
+  color: #aaa;
+  white-space: nowrap;
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.bc-post-item a {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.bc-post-item a:hover {
+  color: #000;
+}
+
+/* ─── Course strip ──────────────────────────────────────────────────── */
+
+.bc-course-strip {
+  background: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+.bc-course-strip h3 {
+  margin-top: 0;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+}
+
+.bc-course-strip p {
+  font-size: 0.9rem;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.bc-course-modules {
+  font-size: 0.825rem;
+  color: #777;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+</style>

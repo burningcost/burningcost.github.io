@@ -518,23 +518,25 @@ The optimiser minimises total dislocation. It does not guarantee that individual
 Before presenting to the committee, analyse the distribution of premium changes across the portfolio:
 
 ```python
-# Compute per-policy premium change at the optimal adjustments
+# Compute per-policy premium change at the optimal adjustments.
+# The optimiser applies a uniform multiplier to each factor across all its levels.
+# This means the percentage change is identical for every policy - adj_product is
+# a single scalar applied uniformly to all current_premium values.
+# What differs across segments is the absolute premium change, not the percentage.
 adj_product = 1.0
 for factor_name, adj in result.factor_adjustments.items():
     adj_product *= adj
 
 df_analysis = df.copy()
 df_analysis["new_premium"] = df_analysis["current_premium"] * adj_product
-df_analysis["pct_change"] = (
-    (df_analysis["new_premium"] - df_analysis["current_premium"])
-    / df_analysis["current_premium"]
-)
+df_analysis["abs_change"] = df_analysis["new_premium"] - df_analysis["current_premium"]
 
-# Distribution of premium changes
-print("Premium change distribution:")
-print(df_analysis["pct_change"].describe())
+print(f"Uniform percentage applied to all policies: {(adj_product - 1) * 100:+.2f}%")
+print("\nAbsolute premium change distribution:")
+print(df_analysis["abs_change"].describe().round(2))
 
-# By age band - are young drivers bearing a disproportionate share?
+# By age band - young drivers pay more in absolute terms because their premiums
+# are higher. A 3.8% increase on a £1,200 premium is £46; on £600 it is £23.
 df_analysis["age_band"] = pd.cut(
     df_analysis["f_age"],
     bins=[0, 0.85, 0.95, 1.05, 1.35, 1.65, 2.5],
@@ -544,15 +546,19 @@ df_analysis["age_band"] = pd.cut(
 
 by_age = df_analysis.groupby("age_band").agg(
     n_policies=("policy_id", "count"),
-    mean_pct_change=("pct_change", "mean"),
+    mean_abs_change=("abs_change", "mean"),
     mean_current_premium=("current_premium", "mean"),
-).round(4)
+).round(2)
 
-print("\nPremium change by age band relativity:")
+print("\nAbsolute premium change by age band relativity:")
 print(by_age.to_string())
 ```
 
-The cross-subsidy diagnostic tells you which segments are implicitly subsidising others in the optimal solution. In most UK motor books, the optimiser will push rate hardest on the factors that have the most room to move (where the LR is highest and the demand elasticity is lowest). Young drivers typically tick both boxes: elevated claims frequency and lower price sensitivity than mature drivers on comparison sites.
+Because the optimiser applies uniform factor multipliers, every policy sees the same percentage change. The cross-subsidy concern is about absolute amounts: young drivers in high-premium bands see larger cash increases even though the rate is moving by the same percentage for everyone. A 3.8% move on a young driver paying £1,200 is £46; on a mature driver paying £600 it is £23.
+
+If different segments should receive different percentage changes, the optimiser would need to adjust individual factor levels rather than applying a single multiplier per factor. That is a higher-dimensional problem. In most UK motor rating reviews, the per-level adjustment decision is made by the pricing actuary separately, after the optimiser identifies the direction and magnitude needed.
+
+In most UK motor books, the optimiser will push rate hardest on the factors that have the most room to move (where the LR is highest and the demand elasticity is lowest). Young drivers typically tick both boxes: elevated claims frequency and lower price sensitivity than mature drivers on comparison sites.
 
 This is where the commercial director will push back. "We cannot take 12% on under-25s in one step." The response is to tighten the factor bounds for that segment:
 

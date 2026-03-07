@@ -452,7 +452,7 @@ Actionable result: if area F has mean relative width 3.2x the portfolio average,
 
 ## Step 7: Minimum premium floors
 
-Prediction interval upper bounds give you a principled minimum premium floor. The logic: the upper bound of a 90% interval represents a loss outcome you expect to see exceeded only 10% of the time. Setting your minimum premium at the 90% upper bound means that even in bad years, the premium is likely to cover losses.
+Prediction interval upper bounds give you a principled minimum premium floor. The logic: the upper bound of a 90% interval is the loss outcome exceeded only 10% of the time, assuming the calibration period was representative. Setting your minimum premium at the 90% upper bound means you expect the premium to be insufficient no more than 10% of the time for that risk - not that it covers losses in bad years, which requires a different argument about what a bad year means for the portfolio.
 
 This is different from the conventional approach, which typically sets floors based on a percentage of a GLM-derived technical premium or a fixed floor from historical experience. The conformal approach is data-driven and risk-specific: a high-volatility risk gets a higher floor, not a percentage of a lower mean estimate.
 
@@ -502,28 +502,38 @@ portfolio_point = intervals_90["point"].sum()
 portfolio_lower_naive = intervals_90["lower"].sum()
 portfolio_upper_naive = intervals_90["upper"].sum()
 
-# Independence-based range: central limit theorem
-# Mean = sum(point); Variance approximated from interval widths
-# If [L, U] is a 90% interval for Y_i ~ Tweedie, then
-# U - L ≈ 2 * 1.645 * sd(Y_i) (approximation for symmetric intervals)
-# So sd(Y_i) ≈ (U_i - L_i) / (2 * 1.645)
+# Independence-based range.
+# For symmetric distributions, the 90% interval width equals 2 * 1.645 * sd, which
+# lets you recover sd from the interval. But Tweedie intervals are asymmetric - the
+# upper bound is materially further from the point estimate than the lower bound.
+# Applying the symmetric formula to asymmetric intervals understates portfolio variance,
+# particularly for books with heavy concentration in large risks.
+#
+# A more honest approach: use the naive (perfect-correlation) range as the upper bound
+# and present the true range as lying somewhere between independence and perfect correlation.
+# The code below shows both; do not present the independence range as a precise estimate.
+#
+# Alternative: simulate using the Tweedie distribution at the calibrated quantile scale.
+# That is more accurate but requires additional implementation.
+
+# Approximate independence range (use with caution for Tweedie data)
+# The symmetric normal approximation is used here for illustration only.
+# It will understate variance for right-skewed, heavy-tailed books.
 approx_sd = (intervals_90["upper"] - intervals_90["lower"]) / (2 * 1.645)
-
-# Portfolio SD under independence assumption
 portfolio_sd = np.sqrt((approx_sd**2).sum())
-
-# 90% portfolio range under independence (CLT)
 portfolio_lower_indep = portfolio_point - 1.645 * portfolio_sd
 portfolio_upper_indep = portfolio_point + 1.645 * portfolio_sd
 
 print(f"Portfolio point estimate:       £{portfolio_point:,.0f}")
 print(f"Naive (perfect corr) 90% range: £{portfolio_lower_naive:,.0f} - £{portfolio_upper_naive:,.0f}")
-print(f"Independence 90% range:          £{portfolio_lower_indep:,.0f} - £{portfolio_upper_indep:,.0f}")
+print(f"Independence range (approx):     £{portfolio_lower_indep:,.0f} - £{portfolio_upper_indep:,.0f}")
 ```
 
-In practice, insurance risks are not independent - they share weather events, economic cycles, inflation shocks. The true portfolio range lies between the independence and perfect-correlation bounds. For standard personal lines motor, an independence assumption is reasonable for most risks with the addition of an explicit catastrophe/shock scenario overlay for weather perils.
+In practice, insurance risks are not independent - they share weather events, economic cycles, inflation shocks. The true portfolio range lies between the independence and perfect-correlation bounds.
 
-For reserving purposes, the independence-based range is a useful central scenario. Present both bounds to the reserving team and be explicit about what they each assume.
+The independence range above uses a symmetric normal approximation to extract individual standard deviations from the interval widths. This is a rough approximation: Tweedie prediction intervals are right-skewed, not symmetric. The formula underestimates portfolio variance for books with heavy concentration in large risks. For a more reliable independence-based range, simulate individual outcomes from the Tweedie distribution parameterised at each policy's point estimate and calibrated quantile.
+
+Present both bounds to the reserving team and be explicit: the naive range assumes everything goes wrong together; the independence range assumes diversification and should be treated as approximate for Tweedie data.
 
 ### Segmented reserve ranges
 

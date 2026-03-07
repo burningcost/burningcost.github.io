@@ -175,10 +175,11 @@ def poisson_deviance(y_true, y_pred, exposure):
     """Scaled Poisson deviance per unit exposure."""
     freq_true = y_true / exposure
     freq_pred = y_pred / exposure
-    # Avoid log(0) by clipping
+    # When freq_true = 0, the log term is zero by convention (0 * log(0) = 0).
+    # Handle explicitly rather than fudging the log argument.
     freq_pred = np.clip(freq_pred, 1e-10, None)
     deviance = 2 * exposure * (
-        freq_true * np.log(freq_true / freq_pred + 1e-10)
+        np.where(freq_true > 0, freq_true * np.log(freq_true / freq_pred), 0.0)
         - (freq_true - freq_pred)
     )
     return deviance.sum() / exposure.sum()
@@ -630,7 +631,7 @@ print(imp_df)
 # Log as MLflow artifact
 fig, ax = plt.subplots(figsize=(8, 4))
 ax.barh(imp_df["feature"].to_list(), imp_df["importance"].to_list())
-ax.set_xlabel("Feature importance (permutation)")
+ax.set_xlabel("Feature importance (PredictionValuesChange)")
 ax.set_title("CatBoost frequency model: feature importances")
 plt.tight_layout()
 
@@ -640,7 +641,7 @@ with mlflow.start_run(run_id=freq_run_id):
 plt.show()
 ```
 
-Feature importance in CatBoost's default mode is the mean absolute SHAP value across the training set, normalised to sum to 100. It tells you which features the model relies on, but not how they influence predictions for individual policies. That is what Module 4 covers.
+Feature importance in CatBoost's default mode is PredictionValuesChange: the average change in model output when a feature is used in a split, normalised to sum to 100. It tells you which features the model relies on, but not how they influence predictions for individual policies. That is what Module 4 covers. Mean absolute SHAP importance requires type="ShapValues" and can give different feature rankings for correlated inputs.
 
 ---
 

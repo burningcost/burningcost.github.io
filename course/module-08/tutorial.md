@@ -318,13 +318,13 @@ for fold_num, (train_idx, val_idx) in enumerate(cv.split(features_pd), 1):
     freq_train = cb.Pool(
         train[FEATURE_COLS],
         label=train["claim_count"],
-        weight=train["exposure"],
+        baseline=np.log(train["exposure"].values),   # log-offset, not sample weight
         cat_features=CAT_FEATURES,
     )
     freq_val = cb.Pool(
         val[FEATURE_COLS],
         label=val["claim_count"],
-        weight=val["exposure"],
+        baseline=np.log(val["exposure"].values),
         cat_features=CAT_FEATURES,
     )
 
@@ -391,13 +391,13 @@ def freq_objective(trial: optuna.Trial) -> float:
     train_pool = cb.Pool(
         tune_train[FEATURE_COLS],
         label=tune_train["claim_count"],
-        weight=tune_train["exposure"],
+        baseline=np.log(tune_train["exposure"].values),
         cat_features=CAT_FEATURES,
     )
     val_pool = cb.Pool(
         tune_val[FEATURE_COLS],
         label=tune_val["claim_count"],
-        weight=tune_val["exposure"],
+        baseline=np.log(tune_val["exposure"].values),
         cat_features=CAT_FEATURES,
     )
 
@@ -453,7 +453,7 @@ with mlflow.start_run(run_name="frequency_catboost_poisson") as freq_run:
     full_freq_pool = cb.Pool(
         features_pd[FEATURE_COLS],
         label=features_pd["claim_count"],
-        weight=features_pd["exposure"],
+        baseline=np.log(features_pd["exposure"].values),
         cat_features=CAT_FEATURES,
     )
 
@@ -472,6 +472,13 @@ with mlflow.start_run(run_name="frequency_catboost_poisson") as freq_run:
     print(f"Mean actual frequency: {(features_pd['claim_count'] / features_pd['exposure']).mean():.5f}")
 
 # --- Severity model ---
+# Severity hyperparameters from a separate Optuna study (same structure as the
+# frequency study above, but with Gamma deviance as the objective and filtered
+# to claim_count > 0 records). In production, run a dedicated severity tuning
+# study. Here we use the frequency best_params as a starting point.
+best_sev_params = {k: v for k, v in best_freq_params.items()
+                   if k not in ("loss_function", "random_seed", "verbose")}
+
 claims_only = features_pd[features_pd["claim_count"] > 0].copy()
 mean_sev = (claims_only["incurred_loss"] / claims_only["claim_count"])
 
@@ -619,16 +626,13 @@ The model gives us point estimates of pure premium. Conformal prediction gives u
 # Cell 8 - Conformal prediction intervals
 from insurance_conformal import ConformalPurePremium
 
-# Reserve 20% of the data as the conformity set
-# This set must be held out from both training and hyperparameter tuning
-# In production: use a genuinely held-out cohort (e.g. most recent 6 months)
-from sklearn.model_selection import train_test_split
-
-calibration_idx, _ = train_test_split(
-    features_pd.index, test_size=0.80, random_state=2026
-)
-calibration = features_pd.loc[calibration_idx].copy()
-scoring = features_pd.drop(index=calibration_idx).copy()
+# Calibration set: most recent accident year (temporal split, consistent with
+# Module 5). Module 5 explains why temporal splits are required for conformal
+# prediction - the exchangeability condition requires calibration scores to come
+# from the same temporal distribution as the data being scored.
+cal_year = features_pd["accident_year"].max()
+calibration = features_pd[features_pd["accident_year"] == cal_year].copy()
+scoring = features_pd[features_pd["accident_year"] < cal_year].copy()
 
 conformal = ConformalPurePremium(
     freq_model=freq_model,
@@ -668,7 +672,7 @@ spark.createDataFrame(
 
 The interval widths will be wider for vehicle group E (the high-risk group) and for young drivers. This is expected - these are genuinely more uncertain predictions. Presenting these intervals to a pricing committee is more honest than presenting point estimates as if they were precise.
 
-One practical note: the calibration set here is drawn randomly from the full dataset, which leaks some temporal information. In production, use a genuinely held-out period - ideally the most recent accident quarter that is nearly fully developed - as the conformity set.
+The calibration set is the most recent accident year - the newest data that is nearly fully developed. This is consistent with the temporal split approach from Module 5. In production, use the most recent accident quarter where claims development is substantially complete.
 
 ---
 

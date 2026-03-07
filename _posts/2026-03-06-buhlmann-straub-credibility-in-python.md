@@ -4,6 +4,7 @@ title: "Bühlmann-Straub Credibility in Python: Blending Thin Segments with Port
 date: 2026-03-06
 categories: [techniques]
 tags: [credibility, buhlmann-straub, pricing, python, GLM, scheme-pricing]
+description: "Buhlmann-Straub credibility in Python for blending thin segment experience with portfolio rates. Covers the mathematics, its equivalence to mixed models, and practical applications in UK personal lines scheme pricing."
 ---
 
 Every pricing actuary has stared at a claim frequency for a small segment and known, with some certainty, that the number is wrong. Not wrong as in a data error. Wrong in the sense that 14 claims across 800 earned car years is not a reliable estimate of anything. You have a prior - your book experience, your GLM, your market data - and the segment's own history, and you need to combine them in a principled way.

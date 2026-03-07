@@ -1,11 +1,15 @@
 title: "Burning Cost"
-description: "Open-source pricing tools for UK insurance teams."
+description: "Open-source pricing tools for UK personal lines insurance teams. Python libraries covering the full pricing workflow: from walk-forward cross-validation to constrained rate optimisation."
 baseurl: ""
 url: "https://burningcost.github.io"
 
 author:
   name: "Burning Cost"
   email: "pricing.frontier@gmail.com"
+
+twitter:
+  username: burningcost
+  card: summary
 
 theme: minima
 
@@ -19,6 +23,7 @@ header_pages:
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-sitemap
 
 show_excerpts: true
 

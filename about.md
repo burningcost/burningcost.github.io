@@ -1,6 +1,7 @@
 ---
 layout: page
 title: About
+description: "Burning Cost builds open-source Python tools for UK personal lines pricing teams. Thirteen libraries covering GLMs, GBMs, SHAP relativities, credibility, rate optimisation, and FCA compliance."
 permalink: /about/
 ---
 

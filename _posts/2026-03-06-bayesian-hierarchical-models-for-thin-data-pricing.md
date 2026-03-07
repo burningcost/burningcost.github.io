@@ -4,6 +4,7 @@ title: "Partial Pooling for Thin Rating Cells: Introducing bayesian-pricing"
 date: 2026-03-06
 categories: [techniques]
 tags: [bayesian, hierarchical-models, pymc, credibility, partial-pooling, pricing, python, motor]
+description: "Partial pooling for thin rating cells in UK motor pricing. How the bayesian-pricing library uses hierarchical Bayesian models to stabilise sparse segments without discarding the information they contain."
 ---
 
 Every UK motor pricing model has the same problem, buried in the same place: the cells that matter most are the ones with the least data.

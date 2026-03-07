@@ -4,6 +4,7 @@ title: "Constrained Rate Optimisation and the Efficient Frontier"
 date: 2026-03-06
 categories: [techniques]
 tags: [rate-optimisation, efficient-frontier, pricing, python, FCA]
+description: "How to build a rate change that meets a target loss ratio, respects movement caps, and minimises cross-subsidy simultaneously. Linear programming for UK personal lines pricing teams."
 ---
 
 Every UK personal lines pricing team we have spoken to runs their rate change process the same way. Someone builds a scenario in Excel. They apply a set of factor adjustments, sum the expected loss ratios across the portfolio, check it against the LR target, and iterate. If the numbers look acceptable, the scenario goes to the underwriting director.

@@ -4,6 +4,7 @@ title: "Demand Modelling for Insurance Pricing"
 date: 2026-03-07
 categories: [techniques]
 tags: [demand, elasticity, DML, conversion, retention, survival, FCA, GIPP, pricing, python, motor]
+description: "How to build a demand model for UK personal lines pricing: conversion, retention, price elasticity, and demand curves. Covers FCA GIPP requirements and the tools that make it tractable."
 ---
 
 Every UK personal lines pricing team we know has a technical premium model. Most of them have a good one. Almost none of them have a demand model.

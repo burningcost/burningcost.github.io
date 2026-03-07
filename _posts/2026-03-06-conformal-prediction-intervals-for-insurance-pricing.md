@@ -4,6 +4,7 @@ title: "Conformal Prediction Intervals for Insurance Pricing Models"
 date: 2026-03-06
 categories: [techniques]
 tags: [conformal-prediction, gbm, catboost, uncertainty, tweedie, pricing, python]
+description: "Conformal prediction intervals for insurance GBMs that are statistically honest. Distribution-free coverage guarantees for individual risk predictions, not confidence intervals for the mean."
 ---
 
 Your Tweedie GBM gives point estimates. That is a problem.

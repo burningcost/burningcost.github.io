@@ -1,8 +1,94 @@
 ---
 layout: page
 title: "Modern Insurance Pricing with Python and Databricks"
+description: "A practitioner-written course for UK personal lines pricing teams. Eight modules covering GLMs, GBMs, SHAP relativities, conformal prediction intervals, credibility, and constrained rate optimisation on Databricks."
 permalink: /course/
 ---
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "Modern Insurance Pricing with Python and Databricks",
+  "description": "A practitioner-written course for UK personal lines pricing teams. Eight modules covering GLMs, GBMs, SHAP relativities, conformal prediction intervals, credibility, and constrained rate optimisation on Databricks.",
+  "url": "https://burningcost.github.io/course/",
+  "provider": {
+    "@type": "Organization",
+    "name": "Burning Cost",
+    "url": "https://burningcost.github.io"
+  },
+  "author": {
+    "@type": "Organization",
+    "name": "Burning Cost",
+    "url": "https://burningcost.github.io"
+  },
+  "educationalLevel": "Professional",
+  "teaches": "Insurance pricing using Python, Databricks, GLMs, GBMs, SHAP, credibility theory, and constrained rate optimisation",
+  "inLanguage": "en-GB",
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "MVP bundle",
+      "price": "295",
+      "priceCurrency": "GBP"
+    },
+    {
+      "@type": "Offer",
+      "name": "Full course",
+      "price": "495",
+      "priceCurrency": "GBP"
+    },
+    {
+      "@type": "Offer",
+      "name": "Individual module",
+      "price": "79",
+      "priceCurrency": "GBP"
+    }
+  ],
+  "hasCourseInstance": [
+    {
+      "@type": "CourseInstance",
+      "name": "Module 1: Databricks for Pricing Teams",
+      "description": "Unity Catalog for pricing data, cluster configuration, Delta tables, and MLflow experiment tracking."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 2: GLMs in Python - The Bridge from Emblem",
+      "description": "Replicating Emblem in Python with statsmodels: offset terms, variance functions, one-way and two-way analysis."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 3: GBMs for Insurance Pricing",
+      "description": "CatBoost with Poisson, gamma, and Tweedie objectives. Walk-forward cross-validation with IBNR buffers."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 4: SHAP Relativities",
+      "description": "Extracting multiplicative relativities from GBMs using SHAP values in the format actuarial reviewers expect."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 5: Conformal Prediction Intervals",
+      "description": "Distribution-free prediction intervals for insurance GBMs, calibrated to your own holdout data."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 6: Credibility and Bayesian Pricing",
+      "description": "Buhlmann-Straub credibility in Python and its relationship to hierarchical models and partial pooling."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 7: Constrained Rate Optimisation",
+      "description": "Linear programming for rate changes that meet a target loss ratio and respect movement caps."
+    },
+    {
+      "@type": "CourseInstance",
+      "name": "Module 8: End-to-End Pipeline (Capstone)",
+      "description": "A complete motor frequency and severity pipeline from Delta ingestion through to rate optimisation output."
+    }
+  ]
+}
+</script>
 
 # Modern Insurance Pricing with Python and Databricks
 

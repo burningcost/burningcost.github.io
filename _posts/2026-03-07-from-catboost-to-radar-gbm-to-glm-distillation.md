@@ -192,7 +192,7 @@ The library uses glum for GLM fitting. glum is a generalised linear model solver
 
 We use Polars throughout for data handling. The aggregation operations in segment deviation computation and lift chart generation are faster and more memory-efficient in Polars than in pandas for the group-by patterns we use. The GLM fitting itself uses numpy arrays internally, as glum requires, so the Polars dependency does not touch the core numerical path.
 
-The library supports Poisson (frequency), Gamma (severity), and Tweedie (pure premium) families. CatBoost, XGBoost, LightGBM, and any sklearn-compatible model with a `.predict()` method are supported. For CatBoost classifiers, pass `predict_method="predict_proba"` and the library will use the positive class probability as the pseudo-response.
+The library supports Poisson (frequency), Gamma (severity), and Tweedie (pure premium) families. CatBoost and any other sklearn-compatible model with a `.predict()` method are supported. For CatBoost classifiers, pass `predict_method="predict_proba"` and the library will use the positive class probability as the pseudo-response.
 
 The regularisation parameter `alpha` on `SurrogateGLM` controls L2 shrinkage on the GLM coefficients. The default is 0.0 (unregularised). For high-cardinality categorical variables or a large number of interaction terms, a small positive alpha (0.001-0.01) can prevent overfitting to sparse cells.
 

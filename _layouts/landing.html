@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ page.title | default: site.title }}</title>
+  <meta name="description" content="{{ page.description | default: site.description }}">
+  <link rel="canonical" href="{{ page.url | absolute_url }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  {% feed_meta %}
+  {% seo %}
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0f1117;
+      --navy-mid: #161b27;
+      --navy-border: #1e2535;
+      --accent: #4f7ef8;
+      --accent-hover: #6690f9;
+      --accent-dim: rgba(79,126,248,0.12);
+      --text-primary: #f0f2f7;
+      --text-secondary: #8b92a8;
+      --text-muted: #5a6278;
+      --white: #ffffff;
+      --surface: #ffffff;
+      --surface-alt: #f7f8fc;
+      --border: #e4e7ef;
+      --border-dark: #d0d5e2;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --mono: 'JetBrains Mono', 'Courier New', monospace;
+      --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    html { font-size: 16px; scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      color: #1a1d2e;
+      background: var(--surface);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Navigation ──────────────────────────────────────────────── */
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15,17,23,0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--navy-border);
+    }
+
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .nav-logo {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      text-decoration: none;
+    }
+
+    .nav-logo:hover { text-decoration: none; color: var(--white); }
+
+    .nav-logo span {
+      color: var(--accent);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: color 0.15s, background 0.15s;
+      text-decoration: none;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-primary);
+      background: rgba(255,255,255,0.06);
+      text-decoration: none;
+    }
+
+    .nav-links a.active {
+      color: var(--text-primary);
+    }
+
+    .nav-cta {
+      background: var(--accent) !important;
+      color: var(--white) !important;
+      padding: 0.4rem 0.9rem !important;
+    }
+
+    .nav-cta:hover {
+      background: var(--accent-hover) !important;
+    }
+
+    /* ── Hero ────────────────────────────────────────────────────── */
+
+    .hero {
+      background: linear-gradient(160deg, #0f1117 0%, #131928 55%, #0d1520 100%);
+      padding: 5rem 1.5rem 4.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 700px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(79,126,248,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border: 1px solid rgba(79,126,248,0.25);
+      padding: 0.3rem 0.75rem;
+      border-radius: 100px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: var(--white);
+      max-width: 780px;
+      margin: 0 auto 1.25rem;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, #6690f9 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: 1.125rem;
+      color: var(--text-secondary);
+      max-width: 600px;
+      margin: 0 auto 2rem;
+      line-height: 1.65;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 0.65rem 1.4rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--white);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      text-decoration: none;
+      color: var(--white);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(79,126,248,0.35);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border: 1px solid var(--navy-border);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.06);
+      text-decoration: none;
+      color: var(--white);
+    }
+
+    /* ── Stats strip ─────────────────────────────────────────────── */
+
+    .stats-strip {
+      background: var(--navy-mid);
+      border-top: 1px solid var(--navy-border);
+      border-bottom: 1px solid var(--navy-border);
+    }
+
+    .stats-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      line-height: 1;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-top: 0.3rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    /* ── Problem section ─────────────────────────────────────────── */
+
+    .problem {
+      padding: 4rem 1.5rem;
+      background: var(--surface);
+    }
+
+    .problem-inner {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .problem h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #1a1d2e;
+      margin-bottom: 1.25rem;
+      line-height: 1.3;
+    }
+
+    .problem p {
+      font-size: 1.0rem;
+      color: #3d4463;
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    .problem p:last-child { margin-bottom: 0; }
+
+    /* ── Libraries section ───────────────────────────────────────── */
+
+    .libraries {
+      background: var(--surface-alt);
+      padding: 4rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .section-header {
+      max-width: 1100px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #1a1d2e;
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .section-header p {
+      color: #5a6278;
+      font-size: 0.975rem;
+    }
+
+    .lib-group {
+      max-width: 1100px;
+      margin: 0 auto 2.25rem;
+    }
+
+    .lib-group-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.85rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .lib-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .lib-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.1rem 1.25rem;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+      display: block;
+      text-decoration: none;
+    }
+
+    .lib-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 4px 16px rgba(79,126,248,0.1);
+      transform: translateY(-2px);
+      text-decoration: none;
+    }
+
+    .lib-card-name {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--accent);
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    .lib-card-desc {
+      font-size: 0.825rem;
+      color: #5a6278;
+      line-height: 1.5;
+    }
+
+    /* ── Course section ──────────────────────────────────────────── */
+
+    .course {
+      background: var(--navy);
+      padding: 4.5rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .course::before {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      right: -10%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(79,126,248,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .course-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .course-left .section-label { margin-bottom: 0.75rem; }
+
+    .course-left h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+
+    .course-left p {
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .price-cards {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .price-card {
+      background: var(--navy-mid);
+      border: 1px solid var(--navy-border);
+      border-radius: var(--radius);
+      padding: 0.75rem 1rem;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .price-card-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .price-card-price {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+
+    .price-card-desc {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .course-modules-list {
+      list-style: none;
+    }
+
+    .course-modules-list li {
+      padding: 0.65rem 0;
+      border-bottom: 1px solid var(--navy-border);
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+    }
+
+    .course-modules-list li:last-child { border-bottom: none; }
+
+    .mod-num {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent);
+      font-family: var(--mono);
+      min-width: 2rem;
+      flex-shrink: 0;
+    }
+
+    .mod-title {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+
+    /* ── Blog section ────────────────────────────────────────────── */
+
+    .posts {
+      background: var(--surface);
+      padding: 4rem 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .posts-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .post-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      background: var(--white);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-card:hover {
+      border-color: var(--border-dark);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+
+    .post-date {
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .post-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1a1d2e;
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .post-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .post-title a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .post-more {
+      margin-top: 1.75rem;
+      text-align: center;
+    }
+
+    /* ── Footer ──────────────────────────────────────────────────── */
+
+    .footer {
+      background: var(--navy);
+      border-top: 1px solid var(--navy-border);
+      padding: 2.5rem 1.5rem;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-brand {
+      font-weight: 700;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+    }
+
+    .footer-brand span { color: var(--accent); }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      list-style: none;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--text-secondary); text-decoration: none; }
+
+    .footer-copy {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      width: 100%;
+      text-align: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--navy-border);
+    }
+
+    /* ── Responsive ──────────────────────────────────────────────── */
+
+    @media (max-width: 768px) {
+      .hero { padding: 3.5rem 1.25rem 3rem; }
+      .hero h1 { font-size: 2rem; }
+      .hero-sub { font-size: 1rem; }
+      .stats-inner { gap: 1.5rem; }
+      .course-inner { grid-template-columns: 1fr; gap: 2rem; }
+      .nav-links { display: none; }
+      .post-grid { grid-template-columns: 1fr; }
+      .price-cards { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-inner { justify-content: space-around; gap: 1rem; }
+      .stat-number { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">Burning<span>Cost</span></a>
+      <ul class="nav-links">
+        <li><a href="/" class="active">Home</a></li>
+        <li><a href="/course/">Course</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="mailto:pricing.frontier@gmail.com?subject=Waitlist%3A%20Modern%20Insurance%20Pricing%20with%20Python%20and%20Databricks" class="btn btn-primary nav-cta">Join waitlist</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  {{ content }}
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">Burning<span>Cost</span></div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/burningcost" target="_blank">GitHub</a></li>
+        <li><a href="/course/">Course</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="mailto:pricing.frontier@gmail.com">Contact</a></li>
+      </ul>
+      <div class="footer-copy">Open-source pricing tools for UK insurance teams. Built by practitioners.</div>
+    </div>
+  </footer>
+
+</body>
+</html>

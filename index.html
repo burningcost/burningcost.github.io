@@ -1,0 +1,222 @@
+---
+layout: landing
+title: "Burning Cost - Open-source pricing tools for UK insurance teams"
+description: "13 Python libraries covering the full pricing workflow. From walk-forward cross-validation to constrained rate optimisation. Built by practitioners, for UK personal lines pricing teams."
+---
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-label">Open source &middot; UK insurance pricing</div>
+  <h1>Bridge the gap between your <em>GBMs</em> and production</h1>
+  <p class="hero-sub">13 Python libraries covering the full pricing workflow. Built by practitioners, for teams that already know what a GLM is.</p>
+  <div class="hero-cta">
+    <a href="/course/" class="btn btn-primary">Training course</a>
+    <a href="https://github.com/burningcost" target="_blank" class="btn btn-outline">GitHub &rarr;</a>
+  </div>
+</section>
+
+<!-- Stats strip -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat">
+      <span class="stat-number">13</span>
+      <span class="stat-label">Libraries</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">600+</span>
+      <span class="stat-label">Tests</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">13</span>
+      <span class="stat-label">Articles</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">8</span>
+      <span class="stat-label">Course modules</span>
+    </div>
+  </div>
+</div>
+
+<!-- Problem statement -->
+<section class="problem">
+  <div class="problem-inner">
+    <div class="section-label">The problem we solve</div>
+    <h2>Your GBM outperforms the production model. So why is the GLM still live?</h2>
+    <p>Most UK pricing teams have adopted GBMs but are still taking GLM outputs to production. The GBM sits on a server outperforming the production model, but the outputs are not in a form that a rating engine, regulator, or pricing committee can work with.</p>
+    <p>The missing piece is not technical skill - it is the tooling that bridges the two. Each library here solves one specific problem in the pricing workflow, ships with actuarial tests, and produces outputs in formats that pricing teams already recognise.</p>
+  </div>
+</section>
+
+<!-- Libraries -->
+<section class="libraries">
+
+  <div class="section-header">
+    <div class="section-label">Open-source libraries</div>
+    <h2>The full pricing workflow, covered</h2>
+    <p>Each library solves one well-defined problem. Actuarial tests included. sklearn-compatible where it matters.</p>
+  </div>
+
+  <div class="lib-group">
+    <div class="lib-group-label">Model interpretation</div>
+    <div class="lib-grid">
+      <a href="https://github.com/burningcost/shap-relativities" target="_blank" class="lib-card">
+        <span class="lib-card-name">shap-relativities</span>
+        <span class="lib-card-desc">Extract multiplicative rating factor tables from CatBoost models using SHAP values. Same output format as exp(beta) from a GLM - factor tables, confidence intervals, exposure weighting, reconstruction validation.</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="lib-group">
+    <div class="lib-group-label">Validation</div>
+    <div class="lib-grid">
+      <a href="https://github.com/burningcost/insurance-cv" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-cv</span>
+        <span class="lib-card-desc">Temporally-correct cross-validation for insurance pricing models. Walk-forward splits with configurable IBNR buffers, Poisson and Gamma deviance scorers, sklearn-compatible API.</span>
+      </a>
+      <a href="https://github.com/burningcost/insurance-conformal" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-conformal</span>
+        <span class="lib-card-desc">Distribution-free prediction intervals for insurance GBMs. Implements the variance-weighted non-conformity score from Manna et al. (2025) - roughly 30% narrower intervals than the naive approach with identical coverage guarantees.</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="lib-group">
+    <div class="lib-group-label">Techniques</div>
+    <div class="lib-grid">
+      <a href="https://github.com/burningcost/credibility" target="_blank" class="lib-card">
+        <span class="lib-card-name">credibility</span>
+        <span class="lib-card-desc">Buhlmann-Straub credibility in Python, with mixed-model equivalence checks. Practical for capping thin segments, stabilising NCD factors, and blending a new model with an incumbent rate.</span>
+      </a>
+      <a href="https://github.com/burningcost/bayesian-pricing" target="_blank" class="lib-card">
+        <span class="lib-card-name">bayesian-pricing</span>
+        <span class="lib-card-desc">Hierarchical Bayesian models for thin-data pricing segments. Partial pooling across risk groups, with credibility factor output in a format that maps back to traditional actuarial review.</span>
+      </a>
+      <a href="https://github.com/burningcost/insurance-interactions" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-interactions</span>
+        <span class="lib-card-desc">Tools for detecting, quantifying, and presenting interaction effects in insurance pricing models - the effects a main-effects-only GLM cannot see.</span>
+      </a>
+      <a href="https://github.com/burningcost/insurance-causal" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-causal</span>
+        <span class="lib-card-desc">Causal inference methods for insurance pricing. Separating genuine risk signal from confounded association - relevant wherever rating factors are correlated with distribution channel or policyholder behaviour.</span>
+      </a>
+      <a href="https://github.com/burningcost/insurance-spatial" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-spatial</span>
+        <span class="lib-card-desc">Spatial territory ratemaking using BYM2 models. Geographically smoothed relativities that borrow strength across adjacent areas - particularly useful for postcode-level home and motor models with thin data.</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="lib-group">
+    <div class="lib-group-label">Commercial</div>
+    <div class="lib-grid">
+      <a href="https://github.com/burningcost/rate-optimiser" target="_blank" class="lib-card">
+        <span class="lib-card-name">rate-optimiser</span>
+        <span class="lib-card-desc">Constrained rate change optimisation for UK personal lines. Formulates the efficient frontier between loss ratio improvement and movement cap constraints as a linear programme.</span>
+      </a>
+      <a href="https://github.com/burningcost/insurance-demand" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-demand</span>
+        <span class="lib-card-desc">Demand and conversion modelling for insurance pricing. Price elasticity curves, own-price and cross-price effects, integration with rate optimisation.</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="lib-group">
+    <div class="lib-group-label">Compliance</div>
+    <div class="lib-grid">
+      <a href="https://github.com/burningcost/insurance-fairness" target="_blank" class="lib-card">
+        <span class="lib-card-name">insurance-fairness</span>
+        <span class="lib-card-desc">Proxy discrimination detection for insurance pricing models. Measures of disparate impact, fairness-accuracy trade-off analysis, FCA Consumer Duty documentation support.</span>
+      </a>
+    </div>
+  </div>
+
+</section>
+
+<!-- Course -->
+<section class="course">
+  <div class="course-inner">
+    <div class="course-left">
+      <div class="section-label">Training course</div>
+      <h2>Modern Insurance Pricing with Python and Databricks</h2>
+      <p>Eight modules written for pricing actuaries and analysts at UK personal lines insurers. Every module covers a real pricing problem - not a generic data science tutorial adapted to insurance.</p>
+
+      <div class="price-cards">
+        <div class="price-card">
+          <div class="price-card-label">MVP bundle</div>
+          <div class="price-card-price">&pound;295</div>
+          <div class="price-card-desc">Modules 1, 2, 4, 6</div>
+        </div>
+        <div class="price-card">
+          <div class="price-card-label">Full course</div>
+          <div class="price-card-price">&pound;495</div>
+          <div class="price-card-desc">All 8 modules</div>
+        </div>
+        <div class="price-card">
+          <div class="price-card-label">Per module</div>
+          <div class="price-card-price">&pound;79</div>
+          <div class="price-card-desc">Any single module</div>
+        </div>
+      </div>
+
+      <a href="/course/" class="btn btn-primary">See the full course &rarr;</a>
+    </div>
+
+    <div class="course-right">
+      <ul class="course-modules-list">
+        <li>
+          <span class="mod-num">01</span>
+          <span class="mod-title">Databricks for pricing teams</span>
+        </li>
+        <li>
+          <span class="mod-num">02</span>
+          <span class="mod-title">GLMs in Python - the bridge from Emblem</span>
+        </li>
+        <li>
+          <span class="mod-num">03</span>
+          <span class="mod-title">GBMs for insurance pricing</span>
+        </li>
+        <li>
+          <span class="mod-num">04</span>
+          <span class="mod-title">SHAP relativities</span>
+        </li>
+        <li>
+          <span class="mod-num">05</span>
+          <span class="mod-title">Conformal prediction intervals</span>
+        </li>
+        <li>
+          <span class="mod-num">06</span>
+          <span class="mod-title">Credibility and Bayesian pricing</span>
+        </li>
+        <li>
+          <span class="mod-num">07</span>
+          <span class="mod-title">Constrained rate optimisation</span>
+        </li>
+        <li>
+          <span class="mod-num">08</span>
+          <span class="mod-title">End-to-end pipeline capstone</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- Blog posts -->
+<section class="posts">
+  <div class="posts-inner">
+    <div class="section-label">From the blog</div>
+    <h2 style="font-size:1.75rem;font-weight:700;letter-spacing:-0.02em;color:#1a1d2e;margin-top:0.5rem;">Practitioner articles on insurance pricing</h2>
+
+    <div class="post-grid">
+      {% for post in site.posts limit:9 %}
+      <div class="post-card">
+        <div class="post-date">{{ post.date | date: "%d %b %Y" }}</div>
+        <div class="post-title"><a href="{{ post.url }}">{{ post.title }}</a></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="post-more">
+      <a href="/blog/" class="btn btn-outline" style="border-color:#d0d5e2;color:#3d4463;">All articles &rarr;</a>
+    </div>
+  </div>
+</section>

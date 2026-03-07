@@ -1,475 +1,72 @@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-/* === Base typography === */
-
-body {
-  font-size: 1rem;
-  line-height: 1.7;
-}
-
-/* === Hero === */
-
-.bc-hero {
-  padding: 3rem 0 2.5rem;
-  border-bottom: 2px solid #e8e8e8;
-  margin-bottom: 3rem;
-}
-
-.bc-hero-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #c0392b;
-  margin-bottom: 0.75rem;
-}
-
-.bc-hero h1 {
-  font-size: 2.25rem;
-  line-height: 1.15;
-  margin-bottom: 1rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.bc-hero-sub {
-  font-size: 1.1rem;
-  color: #444;
-  max-width: 620px;
-  margin-bottom: 0.5rem;
-  line-height: 1.6;
-}
-
-.bc-hero-who {
-  font-size: 0.9rem;
-  color: #888;
-  margin-bottom: 1.75rem;
-  font-style: italic;
-}
-
-.bc-cta-row {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-  margin-top: 1rem;
-}
-
-/* === Buttons === */
-
-.bc-btn {
-  display: inline-block;
-  padding: 0.6rem 1.3rem;
-  border-radius: 3px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  border: 2px solid #333;
-  color: #333;
-  background: transparent;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-
-.bc-btn:hover {
-  background: #333;
-  color: #fff;
-  text-decoration: none;
-}
-
-.bc-btn-primary {
-  background: #c0392b;
-  color: #fff;
-  border-color: #c0392b;
-}
-
-.bc-btn-primary:hover {
-  background: #a93226;
-  border-color: #a93226;
-  color: #fff;
-}
-
-/* === Credibility strip === */
-
-.bc-stats {
-  display: flex;
-  gap: 0;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  margin-bottom: 3rem;
-  overflow: hidden;
-  background: #fff;
-}
-
-.bc-stat {
-  flex: 1;
-  padding: 1.25rem 1.5rem;
-  border-right: 1px solid #e0e0e0;
-  text-align: center;
-}
-
-.bc-stat:last-child {
-  border-right: none;
-}
-
-.bc-stat-number {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #111;
-  line-height: 1;
-  display: block;
-  margin-bottom: 0.3rem;
-}
-
-.bc-stat-label {
-  font-size: 0.78rem;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 600;
-}
-
-@media (max-width: 600px) {
-  .bc-stats {
-    flex-direction: column;
+  :root {
+    --accent: #4f7ef8;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
   }
-  .bc-stat {
-    border-right: none;
-    border-bottom: 1px solid #e0e0e0;
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
-  .bc-stat:last-child {
-    border-bottom: none;
+
+  /* Make the minima header look tighter */
+  .site-header {
+    border-top: 3px solid #4f7ef8;
+    border-bottom: 1px solid #e4e7ef;
   }
-}
 
-/* === Problem statement === */
-
-.bc-problem {
-  background: #fafafa;
-  border-left: 3px solid #c0392b;
-  padding: 1.4rem 1.75rem;
-  margin-bottom: 3rem;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: #333;
-}
-
-.bc-problem p:last-child {
-  margin-bottom: 0;
-}
-
-/* === Section headings === */
-
-.bc-section-title {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #aaa;
-  margin-bottom: 1.5rem;
-  margin-top: 0;
-  border-bottom: 1px solid #ebebeb;
-  padding-bottom: 0.5rem;
-}
-
-/* === Featured posts === */
-
-.bc-featured {
-  margin-bottom: 3rem;
-}
-
-.bc-featured-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.25rem;
-}
-
-.bc-featured-card {
-  background: #fff;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  padding: 1.25rem 1.25rem 1rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  display: flex;
-  flex-direction: column;
-}
-
-.bc-featured-card:hover {
-  border-color: #bbb;
-  box-shadow: 0 3px 10px rgba(0,0,0,0.07);
-}
-
-.bc-featured-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: #c0392b;
-  margin-bottom: 0.5rem;
-}
-
-.bc-featured-card h3 {
-  font-size: 0.975rem;
-  font-weight: 700;
-  margin: 0 0 0.5rem;
-  line-height: 1.35;
-}
-
-.bc-featured-card h3 a {
-  color: #111;
-  text-decoration: none;
-}
-
-.bc-featured-card h3 a:hover {
-  color: #c0392b;
-}
-
-.bc-featured-card p {
-  font-size: 0.855rem;
-  color: #666;
-  margin: 0;
-  line-height: 1.5;
-  flex-grow: 1;
-}
-
-/* === Course block === */
-
-.bc-course {
-  background: #111;
-  color: #f0f0f0;
-  border-radius: 5px;
-  padding: 2rem 2rem 1.75rem;
-  margin-bottom: 3rem;
-}
-
-.bc-course-label {
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #c0392b;
-  margin-bottom: 0.6rem;
-}
-
-.bc-course h2 {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #fff;
-  margin: 0 0 0.75rem;
-  border: none;
-  padding: 0;
-  letter-spacing: 0;
-}
-
-.bc-course-desc {
-  font-size: 0.95rem;
-  color: #bbb;
-  margin-bottom: 1.25rem;
-  max-width: 600px;
-  line-height: 1.6;
-}
-
-.bc-course-modules {
-  font-size: 0.8rem;
-  color: #888;
-  margin-bottom: 1.5rem;
-  line-height: 1.7;
-}
-
-.bc-course-pricing {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-}
-
-.bc-price-item {
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.12);
-  border-radius: 4px;
-  padding: 0.75rem 1rem;
-  text-align: center;
-  min-width: 110px;
-}
-
-.bc-price-amount {
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #fff;
-  display: block;
-  line-height: 1;
-  margin-bottom: 0.2rem;
-}
-
-.bc-price-label {
-  font-size: 0.72rem;
-  color: #888;
-  letter-spacing: 0.06em;
-}
-
-.bc-course .bc-btn {
-  border-color: #c0392b;
-  color: #fff;
-  background: #c0392b;
-}
-
-.bc-course .bc-btn:hover {
-  background: #a93226;
-  border-color: #a93226;
-}
-
-.bc-course .bc-btn-outline {
-  background: transparent;
-  border-color: rgba(255,255,255,0.3);
-  color: #ccc;
-}
-
-.bc-course .bc-btn-outline:hover {
-  background: rgba(255,255,255,0.08);
-  color: #fff;
-}
-
-/* === Repo grid === */
-
-.bc-repos {
-  margin-bottom: 3rem;
-}
-
-.bc-repo-group {
-  margin-bottom: 2rem;
-}
-
-.bc-repo-group-label {
-  font-size: 0.67rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #bbb;
-  margin-bottom: 0.6rem;
-}
-
-.bc-repo-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 0.75rem;
-}
-
-.bc-repo-item {
-  background: #fff;
-  border: 1px solid #e4e4e4;
-  border-radius: 4px;
-  padding: 0.9rem 1rem;
-  transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.bc-repo-item:hover {
-  border-color: #b0b0b0;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-}
-
-.bc-repo-item a {
-  font-weight: 600;
-  font-size: 0.875rem;
-  font-family: monospace;
-  text-decoration: none;
-  color: #222;
-  display: block;
-  margin-bottom: 0.3rem;
-}
-
-.bc-repo-item a:hover {
-  color: #c0392b;
-  text-decoration: none;
-}
-
-.bc-repo-item p {
-  font-size: 0.82rem;
-  color: #666;
-  margin: 0;
-  line-height: 1.5;
-}
-
-/* === Posts list === */
-
-.bc-posts {
-  margin-bottom: 3rem;
-}
-
-.bc-post-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.bc-post-item {
-  padding: 0.85rem 0;
-  border-bottom: 1px solid #ebebeb;
-  display: flex;
-  align-items: baseline;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.bc-post-item:last-child {
-  border-bottom: none;
-}
-
-.bc-post-date {
-  font-size: 0.78rem;
-  color: #bbb;
-  white-space: nowrap;
-  min-width: 80px;
-  flex-shrink: 0;
-}
-
-.bc-post-item a {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: #333;
-  text-decoration: none;
-}
-
-.bc-post-item a:hover {
-  color: #c0392b;
-}
-
-/* === Newsletter === */
-
-.bc-newsletter {
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  padding: 1.75rem 2rem;
-  margin-bottom: 3rem;
-  background: #fafafa;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.bc-newsletter-copy h3 {
-  font-size: 1rem;
-  font-weight: 700;
-  margin: 0 0 0.3rem;
-}
-
-.bc-newsletter-copy p {
-  font-size: 0.875rem;
-  color: #666;
-  margin: 0;
-}
-
-@media (max-width: 600px) {
-  .bc-hero h1 {
-    font-size: 1.7rem;
+  .site-title {
+    font-weight: 700;
+    letter-spacing: -0.01em;
   }
-  .bc-course {
-    padding: 1.5rem 1.25rem;
+
+  /* Improve code block styling */
+  code, pre {
+    font-family: var(--mono);
+    font-size: 0.85em;
   }
-  .bc-newsletter {
-    padding: 1.25rem;
+
+  .highlight {
+    border-radius: 6px;
+    overflow: hidden;
   }
-}
+
+  /* Better link styling in post content */
+  .post-content a, .page-content a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .post-content a:hover, .page-content a:hover {
+    text-decoration: underline;
+  }
+
+  /* Table improvements for course pricing table */
+  .post-content table, .page-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 1.5rem 0;
+    font-size: 0.9rem;
+  }
+
+  .post-content th, .page-content th {
+    background: #f7f8fc;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e4e7ef;
+  }
+
+  .post-content td, .page-content td {
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e4e7ef;
+  }
+
+  /* Headings */
+  h1, h2, h3, h4 {
+    letter-spacing: -0.02em;
+  }
 </style>
